@@ -1,4 +1,3 @@
-import { executeTask } from '@dcl/sdk/ecs'
 import * as EthConnect from 'eth-connect'
 import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
 import { getPlayer } from '@dcl/sdk/src/players'
