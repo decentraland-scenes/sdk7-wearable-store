@@ -1,3 +1,8 @@
+import * as eth from "eth-connect";
+
+export function ethClean(_amount: string): string {
+  return eth.fromWei(_amount, "ether");
+}
 export function wordWrap(str: string, maxWidth: number, maxLines: number): string {
   const newLineStr = '\n'
   let done = false
@@ -69,4 +74,14 @@ export function shortenText(text: string, maxLenght: number): string {
   }
 
   return finalText
+}
+
+export function cleanString(input: string): string {
+  var output = ''
+  for (var i = 0; i < input.length; i++) {
+    if (input.charCodeAt(i) <= 127 || (input.charCodeAt(i) >= 160 && input.charCodeAt(i) <= 255)) {
+      output += input.charAt(i)
+    }
+  }
+  return output
 }
