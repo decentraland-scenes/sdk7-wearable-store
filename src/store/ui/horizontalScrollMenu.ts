@@ -38,7 +38,7 @@ export const HorizontalScroller = engine.defineComponent('HorizontalScroller', {
   currentMenuVelocity: Schemas.Number
 })
 
-export function scrollUp(entity: Entity): void {
+function scrollUp(entity: Entity): void {
   const data = HorizontalScroller.getMutable(entity)
   if (data.currentItem < data.stops - 1) {
     data.currentItem += 1
@@ -46,7 +46,7 @@ export function scrollUp(entity: Entity): void {
   }
 }
 
-export function scrollDown(entity: Entity): void {
+function scrollDown(entity: Entity): void {
   const data = HorizontalScroller.getMutable(entity)
   if (data.currentItem > 0) {
     data.currentItem -= 1
@@ -54,7 +54,7 @@ export function scrollDown(entity: Entity): void {
   }
 }
 
-export function reset(entity: Entity): void {
+function reset(entity: Entity): void {
   HorizontalScroller.getMutable(entity).base = 0
   HorizontalScroller.getMutable(entity).stops = 0
   HorizontalScroller.getMutable(entity).currentItem = 0
