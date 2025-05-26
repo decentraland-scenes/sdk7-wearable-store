@@ -1,11 +1,11 @@
-import { engine, Material, MeshRenderer, Transform, type TextureUnion, type TransformType } from '@dcl/sdk/ecs'
+import { engine, Material, MeshRenderer, Transform, type TransformType } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 
 export class ThumbnailPlane {
   public entity = engine.addEntity()
   public texture: string
 
-  constructor(_image: string, _transform: TransformType, _alphaImage?: TextureUnion) {
+  constructor(_image: string, _transform: TransformType, _alphaImage: string) {
     MeshRenderer.setPlane(
       this.entity,
       [
@@ -17,12 +17,14 @@ export class ThumbnailPlane {
     this.texture = _image
     Material.setPbrMaterial(this.entity, {
       texture: Material.Texture.Common({
-        src: this.texture
+        src: this.texture,
       }),
-      specularIntensity: 0,
+      alphaTexture: Material.Texture.Common({
+        src: _alphaImage,
+      }),
+            specularIntensity: 0,
       metallic: 0,
       roughness: 1,
-      alphaTexture: _alphaImage
     })
     Transform.create(this.entity, {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions

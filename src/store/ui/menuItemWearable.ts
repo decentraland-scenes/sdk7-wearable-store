@@ -11,7 +11,6 @@ import {
   GltfContainer,
   TextAlignMode,
   TextShape,
-  type TextureUnion,
   Transform,
   type TransformType,
   type PBTextShape,
@@ -68,9 +67,9 @@ export class WearableMenuItem extends MenuItem {
   // detailText:Entity
   // detailTextPanel:Entity
 
-  constructor(_transform: TransformType, _alphaTexture: TextureUnion, _collection: any, _item: any) {
+  constructor(_transform: TransformType, _alphaTexture: string, _collection: any, _item: any) {
     super()
-    Transform.create(this.entity)
+    Transform.create(this.entity, _transform)
     this.scale = Vector3.create(1, 0.5, 1)
     this.scaleMultiplier = 1.2
     this.defaultItemScale = Vector3.create(1, 1, 1)
