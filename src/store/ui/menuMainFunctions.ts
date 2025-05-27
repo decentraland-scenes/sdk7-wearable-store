@@ -6,6 +6,32 @@ import { WearableMenuItem } from './menuItemWearable'
 import { collectionPlaceholder, wearableItemPlaceholder } from './menuPlaceholders'
 import { VerticalScrollMenu } from './verticalScrollMenu'
 import { menuTopEventsShape, roundedSquareAlpha, wardrobeShape } from './resources/resources'
+import { createMANAComponent } from '../blockchain/mana'
+import * as f from '../blockchain/fetch'
+import { getPlayer } from '@dcl/sdk/src/players'
+
+const STORE_CONTRACT_ADDRESS = '0xf64Dc33a192e056bb5f0e5049356a0498B502D50'
+
+export type Collection = {
+  id: string
+  name: string
+  isApproved: boolean
+  owner: string
+  urn: string
+  items: Array<{
+    metadata: {
+      wearable?: { name: string }
+      emote?: { name: string }
+    }
+    image: string
+    price: string
+    rarity: string
+    available: string
+    maxSupply: string
+    blockchainId: string
+    urn: string
+  }>
+}
 
 // WEARABLES MENU IN WARDROBE
 export function createWearablesHorizontalMenu(_transform: TransformType, _visibleItems: number): HorizontalScrollMenu {
@@ -139,72 +165,6 @@ export function createCollectionsVerticalMenu(
   return collectionsMenu
 }
 
-// export async function updateCollectionsMenu(
-//   _menu: VerticalScrollMenu,
-//   _wearableMenuRef: HorizontalScrollMenu,
-//   _count: number,
-//   _addLoadMoreButton: boolean,
-//   collectionsList?: string[]
-// ): Promise<void> {
-//   console.log(collectionsList)
-//   const { mana, store } = await createComponents()
-//   const storeContract = getContract(ContractName.CollectionStore, 137)
-
-//   // console.log("MANA: " + eth.fromWei(await mana.balance(), "ether"))
-
-//   // const isApproved = await mana.isApproved(storeContract.address)
-
-//   // if(isApproved <  +eth.toWei(500, "ether")){
-//   // await mana.approve(storeContract.address, 1).catch(() => {});
-
-//   // }
-//   let collections: f.Collections = []
-//   if (collectionsList) {
-//     for (const collectionURN of collectionsList) {
-//       const collection = await f.collection(collectionURN)
-//       if (collection !== undefined) collections.push(collection)
-//     }
-//   } else {
-//     collections = await f.storeCollections().then((r) => r.collections)
-//   }
-//   const fromAddress = await getUserAccount()
-
-//   console.log(collections)
-//   const cubePosition = -1
-//   let itemCount = 0
-//   console.log('number of Collections: ' + collections.length)
-
-//   for (const collection of collections) {
-//     console.log('number of items in collection: ' + collection.items.length)
-
-//     console.log('adding: ' + collection.name)
-//     if (itemCount < _menu.items.length) {
-//       _menu.items[itemCount].updateItemInfo(collection)
-//     } else {
-//       _menu.addMenuItem(
-//         new CollectionMenuItem(
-//           {
-//             position: Vector3.create(0, 0, 0.5),
-//             scale: Vector3.create(1, 1, 1),
-//             rotation: Quaternion.fromEulerDegrees(0, 0, 0)
-//           },
-//           roundedSquareAlpha,
-//           collection,
-//           _wearableMenuRef,
-//           updateWearablesMenu
-//         )
-//       )
-//     }
-//     itemCount++
-//   }
-
-//   if (itemCount <= _menu.items.length) {
-//     _menu.removeLastXItems(_menu.items.length - itemCount)
-//   }
-//   if (collections.length) updateWearablesMenu(_wearableMenuRef, collections[0])
-//   _menu.resetScroll()
-// }
-
 export async function fillWearablesMenu(_menu: HorizontalScrollMenu): Promise<void> {
   // let events = await getEvents(10)
   // if (events.length <= 0) {
@@ -226,4 +186,70 @@ export function removeLastXItems(_menu: HorizontalScrollMenu, x: number): void {
       _menu.removeMenuItem(_menu.items.length - 1)
     }
   }
+}
+export async function updateCollectionsMenu(
+  _menu: VerticalScrollMenu,
+  _wearableMenuRef: HorizontalScrollMenu,
+  _count: number,
+  _addLoadMoreButton: boolean,
+  collectionsList?: string[]
+): Promise<void> {
+  console.log(collectionsList)
+  const mana = createMANAComponent()
+  let collections: f.Collections = []
+  if (collectionsList != null) {
+    for (const collectionURN of collectionsList) {
+      const collection = await f.collection(collectionURN)
+      if (collection !== undefined) collections.push(collection as unknown as f.Collection)
+    }
+  } else {
+    collections = await f.storeCollections().then((r) => r.collections)
+  }
+  const fromAddress = getPlayer()
+
+  const allowance = await mana.allowance(fromAddress?.userId, STORE_CONTRACT_ADDRESS)
+  const minimumRequired = 500n * 10n ** 18n
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  if (BigInt(allowance) < minimumRequired) {
+    console.log('Approving MANA to CollectionStore...')
+    try {
+      await mana.approve(STORE_CONTRACT_ADDRESS, minimumRequired.toString())
+      console.log('MANA approved.')
+    } catch (e) {
+      console.log('MANA approval failed', e)
+    }
+  }
+  console.log(collections)
+  let itemCount = 0
+  console.log('number of Collections: ' + collections.length)
+  for (const collection of collections) {
+    console.log('number of items in collection: ' + collection.items.length)
+    console.log('adding: ' + collection.name)
+    if (itemCount < _menu.items.length) {
+      _menu.items[itemCount].updateItemInfo(collection)
+    } else {
+      _menu.addMenuItem(
+        new CollectionMenuItem(
+          {
+            position: Vector3.create(0, 0, 0.5),
+            scale: Vector3.create(1, 1, 1),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+          },
+          roundedSquareAlpha,
+          collection,
+          _wearableMenuRef,
+          updateWearablesMenu
+        )
+      )
+    }
+    itemCount++
+  }
+  if (itemCount <= _menu.items.length) {
+    // missing method removeLAstXItems
+    // _menu.removeLastXItems(_menu.items.length - itemCount)
+  }
+  if (collections.length > 0) {
+    updateWearablesMenu(_wearableMenuRef, collections[0])
+  }
+  _menu.resetScroll()
 }

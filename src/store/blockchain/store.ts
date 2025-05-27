@@ -1,9 +1,9 @@
 import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
 import { getPlayer } from '@dcl/sdk/src/players'
 import * as EthConnect from 'eth-connect'
-import { abi as storeAbi } from './abi'
+import { collectionStoreAbi as storeAbi } from './collectionStoreAbi'
 
-const STORE_CONTRACT_ADDRESS = '0x94D3fE409E1F2019bCORRECTCOLECTIONNEEDED9F5314e97C089D436d204B6'
+const STORE_CONTRACT_ADDRESS = '0xf64Dc33a192e056bb5f0e5049356a0498B502D50'
 
 type StoreComponent = {
   buy: (collectionId: string, blockchainId: string, price: string) => Promise<boolean>

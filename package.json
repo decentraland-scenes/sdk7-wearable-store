@@ -35,5 +35,8 @@
     "singleQuote": true,
     "printWidth": 120,
     "trailingComma": "none"
+  },
+  "dependencies": {
+    "dcl-ui-toolkit": "^0.10.0"
   }
 }

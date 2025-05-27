@@ -3,7 +3,7 @@ import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { abi } from './abi'
 
-const MANA_ADDRESS = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // MANA in Polygon
+const MANA_ADDRESS = '0x0f5d2fb29fb7d3cfee444a200298f468908cc942' // MANA Mainnet
 
 export function createMANAComponent(): any {
   async function getDependencies(): Promise<any> {

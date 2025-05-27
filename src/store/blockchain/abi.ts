@@ -278,23 +278,6 @@ export const abi = [
     constant: false,
     inputs: [
       {
-        name: 'to',
-        type: 'address'
-      },
-      {
-        name: 'amount',
-        type: 'uint256'
-      }
-    ],
-    name: 'setBalance',
-    outputs: [],
-    payable: false,
-    type: 'function'
-  },
-  {
-    constant: false,
-    inputs: [
-      {
         name: 'newOwner',
         type: 'address'
       }
