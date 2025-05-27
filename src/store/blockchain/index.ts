@@ -3,6 +3,7 @@ import * as ui from 'dcl-ui-toolkit'
 import { createMANAComponent } from './mana'
 import { createStoreComponent } from './store'
 import { openExternalUrl } from '~system/RestrictedActions'
+import { type WearableMenuItem } from '../ui/menuItemWearable'
 
 const STORE_CONTRACT_ADDRESS = '0xf64Dc33a192e056bb5f0e5049356a0498B502D50'
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
