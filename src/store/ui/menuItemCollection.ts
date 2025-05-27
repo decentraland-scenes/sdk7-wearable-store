@@ -2,7 +2,6 @@ import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { MenuItem } from './menuItem'
 import {
   type Entity,
-  type Texture,
   Transform,
   TextShape,
   Font,
@@ -32,7 +31,7 @@ export class CollectionMenuItem extends MenuItem {
 
   constructor(
     _transform: TransformType,
-    _alphaTexture: Texture,
+    _alphaTexture: string,
     _collection: any,
     _wearableMenu: HorizontalScrollMenu,
     _updateWearablesMenu: (_menu: HorizontalScrollMenu, _collection: any) => void

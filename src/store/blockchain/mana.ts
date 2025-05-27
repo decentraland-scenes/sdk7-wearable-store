@@ -1,4 +1,3 @@
-import { executeTask } from '@dcl/sdk/ecs'
 import * as EthConnect from 'eth-connect'
 import { createEthereumProvider } from '@dcl/sdk/ethereum-provider'
 import { getPlayer } from '@dcl/sdk/src/players'
@@ -6,13 +5,13 @@ import { abi } from './abi'
 
 const MANA_ADDRESS = '0x0f5d2fb29fb7d3cfee444a200298f468908cc942' // MANA Mainnet
 
-export function createMANAComponent() {
-  async function getDependencies() {
-    const provider = await createEthereumProvider()
-    const player = await getPlayer()
+export function createMANAComponent(): any {
+  async function getDependencies(): Promise<any> {
+    const provider = createEthereumProvider()
+    const player = getPlayer()
     const userAddress = player?.userId
 
-    if (!userAddress) throw new Error('No wallet connected')
+    if (userAddress == null) throw new Error('No wallet connected')
 
     const requestManager = new EthConnect.RequestManager(provider)
     const factory = new EthConnect.ContractFactory(requestManager, abi)
@@ -21,19 +20,19 @@ export function createMANAComponent() {
     return { contract, userAddress }
   }
 
-  async function balance() {
+  async function balance(): Promise<any> {
     const { contract, userAddress } = await getDependencies()
     const res = await contract.balanceOf(userAddress)
     return res
   }
 
-  async function isApproved(spenderAddress: string) {
+  async function isApproved(spenderAddress: string): Promise<any> {
     const { contract, userAddress } = await getDependencies()
     const res = await contract.allowance(userAddress, spenderAddress)
     return +res
   }
 
-  async function approve(spenderAddress: string, amount: number = 0) {
+  async function approve(spenderAddress: string, amount: number = 0): Promise<any> {
     const { contract, userAddress } = await getDependencies()
 
     const maxAmount = amount === 0 ? '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' : amount

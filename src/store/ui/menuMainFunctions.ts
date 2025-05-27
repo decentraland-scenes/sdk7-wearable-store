@@ -1,155 +1,143 @@
-// import { getUserAccount } from '@decentraland/EthereumController'
-// import * as eth from 'eth-connect'
-// import { getContract, ContractName } from 'decentraland-transactions'
-// import { createMANAComponent } from '../blockchain/components/mana'
-// import { createComponents, buy } from '../blockchain/index'
-// import * as f from '../blockchain/fetch'
+import { engine, Transform, type TransformType } from '@dcl/sdk/ecs'
+import { Vector3, Quaternion } from '@dcl/sdk/math'
+import { HorizontalScrollMenu } from './horizontalScrollMenu'
+import { CollectionMenuItem } from './menuItemCollection'
+import { WearableMenuItem } from './menuItemWearable'
+import { collectionPlaceholder, wearableItemPlaceholder } from './menuPlaceholders'
+import { VerticalScrollMenu } from './verticalScrollMenu'
+import { menuTopEventsShape, roundedSquareAlpha, wardrobeShape } from './resources/resources'
 
-// import { WearableMenuItem } from './menuItemWearable'
-// import { CollectionMenuItem } from './menuItemCollection'
-// import { HorizontalScrollMenu } from './horizontalScrollMenu'
+// WEARABLES MENU IN WARDROBE
+export function createWearablesHorizontalMenu(_transform: TransformType, _visibleItems: number): HorizontalScrollMenu {
+  const menuRoot = engine.addEntity()
+  const wearablesMenu = new HorizontalScrollMenu(
+    {
+      position: Vector3.create(0, 0.6, 0),
+      scale: Vector3.create(1, 1, 1),
+      rotation: Quaternion.fromEulerDegrees(-5, 0, 0)
+    },
+    0.7,
+    _visibleItems,
+    menuTopEventsShape,
+    wardrobeShape,
+    'Wearables'
+  )
+  Transform.create(menuRoot, {
+    position: _transform.position,
+    rotation: _transform.rotation,
+    scale: _transform.scale
+  })
+  Transform.getMutable(wearablesMenu.entity).parent = menuRoot
 
-// import * as resource from './resources/resources'
-// import * as sfx from './resources/sounds'
-// import { wearableItemPlaceholder, collectionPlaceholder } from './menuPlaceholders'
-// import { AnimatedItem } from './simpleAnimator'
-// import { CooldownActivated } from './cooldown'
-// import { VerticalScrollMenu } from './verticalScrollMenu'
+  for (let i = 0; i < 10; i++) {
+    wearablesMenu.addMenuItem(
+      new WearableMenuItem(
+        {
+          position: Vector3.create(0, 0, 0),
+          scale: Vector3.create(1, 1, 1),
+          rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+        },
+        roundedSquareAlpha,
+        collectionPlaceholder,
+        wearableItemPlaceholder
+      )
+    )
+  }
 
-// // WEARABLES MENU IN WARDROBE
-// export function createWearablesHorizontalMenu(
-//   _transform: TranformConstructorArgs,
-//   _visibleItems: number
-// ): HorizontalScrollMenu {
-//   const menuRoot = new Entity()
-//   const wearablesMenu = new HorizontalScrollMenu(
-//     {
-//       position: new Vector3(0, 0.6, 0),
-//       scale: new Vector3(1, 1, 1),
-//       rotation: Quaternion.Euler(-5, 0, 0)
-//     },
-//     0.7,
-//     _visibleItems,
-//     resource.menuTopEventsShape,
-//     resource.wardrobeShape,
-//     'Wearables'
-//   )
-//   menuRoot.addComponent(
-//     new Transform({
-//       position: _transform.position,
-//       rotation: _transform.rotation,
-//       scale: _transform.scale
-//     })
-//   )
-//   wearablesMenu.setParent(menuRoot)
-//   engine.addEntity(menuRoot)
+  wearablesMenu.halveSizeAllExcept(0)
 
-//   //placeholder menuItems
-//   // for (let i = 0; i < vertEventMenu.visibleItemCount; i++){
-//   for (let i = 0; i < 10; i++) {
-//     wearablesMenu.addMenuItem(
-//       new WearableMenuItem(
-//         {
-//           scale: new Vector3(1, 1, 1)
-//         },
-//         resource.roundedSquareAlpha,
-//         collectionPlaceholder,
-//         wearableItemPlaceholder
-//       )
-//     )
-//   }
+  return wearablesMenu
+}
 
-//   wearablesMenu.halveSizeAllExcept(0)
+export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: any): void {
+  console.log('update: Collection= ', _collection)
 
-//   return wearablesMenu
-// }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  _menu.updateTitle(_collection.name)
 
-// export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: any) {
-//   log('update: Collection= ', _collection)
+  for (let i = 0; i < _collection.items.length; i++) {
+    // only show wearables wich have purchasable copies left
+    // if (_collection.items[i].available > 0) {
 
-//   _menu.updateTitle(_collection.name)
+    // while there are still existing cards left in the menu (from previous collection) update those
+    if (i < _menu.items.length) {
+      _menu.items[i].updateItemInfo(_collection, _collection.items[i])
+    }
+    // otherwise add new cards to the menu
+    else {
+      // console.log("adding: " + _collection.items[i].metadata.wearable.name);
+      _menu.addMenuItem(
+        new WearableMenuItem(
+          {
+            position: Vector3.create(0, 0, 0),
+            scale: Vector3.create(1, 1, 1),
+            rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+          },
+          roundedSquareAlpha,
+          _collection,
+          _collection.items[i]
+        )
+      )
+    }
 
-//   for (let i = 0; i < _collection.items.length; i++) {
-//     // only show wearables wich have purchasable copies left
-//     //if (_collection.items[i].available > 0) {
+    // }
+  }
 
-//     // while there are still existing cards left in the menu (from previous collection) update those
-//     if (i < _menu.items.length) {
-//       _menu.items[i].updateItemInfo(_collection, _collection.items[i])
-//     }
-//     //otherwise add new cards to the menu
-//     else {
-//       //log("adding: " + _collection.items[i].metadata.wearable.name);
-//       _menu.addMenuItem(
-//         new WearableMenuItem(
-//           {
-//             scale: new Vector3(1, 1, 1)
-//           },
-//           resource.roundedSquareAlpha,
-//           _collection,
-//           _collection.items[i]
-//         )
-//       )
-//     }
+  if (_collection.items.length < _menu.items.length) {
+    removeLastXItems(_menu, _menu.items.length - _collection.items.length)
+  }
 
-//     //}
-//   }
+  _menu.resetScroll()
+  _menu.halveSizeAllExcept(0)
+}
 
-//   if (_collection.items.length < _menu.items.length) {
-//     removeLastXItems(_menu, _menu.items.length - _collection.items.length)
-//   }
+// COLLECTIONS MENU
+export function createCollectionsVerticalMenu(
+  _transform: TransformType,
+  _wearableMenuRef: HorizontalScrollMenu,
+  _visibleItems: number
+): VerticalScrollMenu {
+  const menuRoot = engine.addEntity()
+  const collectionsMenu = new VerticalScrollMenu(
+    {
+      position: Vector3.create(0, 0, 0.5),
+      scale: Vector3.create(1, 1, 1),
+      rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+    },
+    0.19,
+    _visibleItems,
+    menuTopEventsShape,
+    wardrobeShape,
+    'Events'
+  )
+  Transform.create(menuRoot, {
+    position: _transform.position,
+    rotation: _transform.rotation,
+    scale: _transform.scale
+  })
+  Transform.getMutable(collectionsMenu.entity).parent = menuRoot
+  Transform.getMutable(menuRoot).parent = _wearableMenuRef.entity
 
-//   _menu.resetScroll()
-//   _menu.halveSizeAllExcept(0)
-// }
+  // placeholder menuItems
+  // for (let i = 0; i < vertEventMenu.visibleItemCount; i++){
+  for (let i = 0; i < 20; i++) {
+    collectionsMenu.addMenuItem(
+      new CollectionMenuItem(
+        {
+          position: Vector3.create(0, 0, 0.5),
+          scale: Vector3.create(1, 1, 1),
+          rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+        },
+        roundedSquareAlpha,
+        collectionPlaceholder,
+        _wearableMenuRef,
+        updateWearablesMenu
+      )
+    )
+  }
 
-// // COLLECTIONS MENU
-// export function createCollectionsVerticalMenu(
-//   _transform: TranformConstructorArgs,
-//   _wearableMenuRef: HorizontalScrollMenu,
-//   _visibleItems: number
-// ): VerticalScrollMenu {
-//   const menuRoot = new Entity()
-//   const collectionsMenu = new VerticalScrollMenu(
-//     {
-//       position: new Vector3(0, 0, 0.5),
-//       scale: new Vector3(1, 1, 1)
-//     },
-//     0.19,
-//     _visibleItems,
-//     resource.menuTopEventsShape,
-//     resource.wardrobeShape,
-//     'Events'
-//   )
-//   menuRoot.addComponent(
-//     new Transform({
-//       position: _transform.position,
-//       rotation: _transform.rotation,
-//       scale: _transform.scale
-//     })
-//   )
-//   collectionsMenu.setParent(menuRoot)
-//   menuRoot.setParent(_wearableMenuRef)
-//   engine.addEntity(menuRoot)
-
-//   //placeholder menuItems
-//   // for (let i = 0; i < vertEventMenu.visibleItemCount; i++){
-//   for (let i = 0; i < 20; i++) {
-//     collectionsMenu.addMenuItem(
-//       new CollectionMenuItem(
-//         {
-//           scale: new Vector3(1, 1, 1)
-//         },
-//         resource.roundedSquareAlpha,
-//         collectionPlaceholder,
-//         _wearableMenuRef,
-//         updateWearablesMenu
-//       )
-//     )
-//   }
-
-//   return collectionsMenu
-// }
+  return collectionsMenu
+}
 
 // export async function updateCollectionsMenu(
 //   _menu: VerticalScrollMenu,
@@ -157,19 +145,19 @@
 //   _count: number,
 //   _addLoadMoreButton: boolean,
 //   collectionsList?: string[]
-// ) {
-//   log(collectionsList)
+// ): Promise<void> {
+//   console.log(collectionsList)
 //   const { mana, store } = await createComponents()
 //   const storeContract = getContract(ContractName.CollectionStore, 137)
 
-//   //log("MANA: " + eth.fromWei(await mana.balance(), "ether"))
+//   // console.log("MANA: " + eth.fromWei(await mana.balance(), "ether"))
 
-//   //const isApproved = await mana.isApproved(storeContract.address)
+//   // const isApproved = await mana.isApproved(storeContract.address)
 
-//   //if(isApproved <  +eth.toWei(500, "ether")){
-//   //await mana.approve(storeContract.address, 1).catch(() => {});
+//   // if(isApproved <  +eth.toWei(500, "ether")){
+//   // await mana.approve(storeContract.address, 1).catch(() => {});
 
-//   //}
+//   // }
 //   let collections: f.Collections = []
 //   if (collectionsList) {
 //     for (const collectionURN of collectionsList) {
@@ -181,24 +169,26 @@
 //   }
 //   const fromAddress = await getUserAccount()
 
-//   log(collections)
+//   console.log(collections)
 //   const cubePosition = -1
 //   let itemCount = 0
-//   log('number of Collections: ' + collections.length)
+//   console.log('number of Collections: ' + collections.length)
 
 //   for (const collection of collections) {
-//     log('number of items in collection: ' + collection.items.length)
+//     console.log('number of items in collection: ' + collection.items.length)
 
-//     log('adding: ' + collection.name)
+//     console.log('adding: ' + collection.name)
 //     if (itemCount < _menu.items.length) {
 //       _menu.items[itemCount].updateItemInfo(collection)
 //     } else {
 //       _menu.addMenuItem(
 //         new CollectionMenuItem(
 //           {
-//             scale: new Vector3(1, 1, 1)
+//             position: Vector3.create(0, 0, 0.5),
+//             scale: Vector3.create(1, 1, 1),
+//             rotation: Quaternion.fromEulerDegrees(0, 0, 0)
 //           },
-//           resource.roundedSquareAlpha,
+//           roundedSquareAlpha,
 //           collection,
 //           _wearableMenuRef,
 //           updateWearablesMenu
@@ -215,25 +205,25 @@
 //   _menu.resetScroll()
 // }
 
-// export async function fillWearablesMenu(_menu: HorizontalScrollMenu) {
-//   // let events = await getEvents(10)
-//   // if (events.length <= 0) {
-//   //   return
-//   // }
-//   // for(let i=0; i < events.length; i++){
-//   //   _menu.addMenuItem(new EventMenuItem({
-//   //     scale: new Vector3(2,2,2)
-//   //   },
-//   //   new Texture("images/rounded_alpha.png"),
-//   //   events[i]
-//   // ))
-//   // }
-// }
+export async function fillWearablesMenu(_menu: HorizontalScrollMenu): Promise<void> {
+  // let events = await getEvents(10)
+  // if (events.length <= 0) {
+  //   return
+  // }
+  // for(let i=0; i < events.length; i++){
+  //   _menu.addMenuItem(new EventMenuItem({
+  //     scale: Vector3.create(2,2,2)
+  //   },
+  //   new Texture("images/rounded_alpha.png"),
+  //   events[i]
+  // ))
+  // }
+}
 
-// export function removeLastXItems(_menu: HorizontalScrollMenu, x: number) {
-//   if (x >= 1) {
-//     for (let i = 0; i < x; i++) {
-//       _menu.removeMenuItem(_menu.items.length - 1)
-//     }
-//   }
-// }
+export function removeLastXItems(_menu: HorizontalScrollMenu, x: number): void {
+  if (x >= 1) {
+    for (let i = 0; i < x; i++) {
+      _menu.removeMenuItem(_menu.items.length - 1)
+    }
+  }
+}
