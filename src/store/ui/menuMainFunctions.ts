@@ -150,7 +150,7 @@ export function createCollectionsVerticalMenu(
     collectionsMenu.addMenuItem(
       new CollectionMenuItem(
         {
-          position: Vector3.create(0, 0, 0.5),
+          position: Vector3.create(0, 0, 0),
           scale: Vector3.create(1, 1, 1),
           rotation: Quaternion.fromEulerDegrees(0, 0, 0)
         },
@@ -231,7 +231,7 @@ export async function updateCollectionsMenu(
       _menu.addMenuItem(
         new CollectionMenuItem(
           {
-            position: Vector3.create(0, 0, 0.5),
+            position: Vector3.create(0, 0, 0),
             scale: Vector3.create(1, 1, 1),
             rotation: Quaternion.fromEulerDegrees(0, 0, 0)
           },
