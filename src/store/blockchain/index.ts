@@ -145,6 +145,7 @@ export async function buy(collectionId: string, blockchainId: string, price: str
   return {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     balance: fromWei(balance, 'ether'),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     allowance: fromWei(allowance.toString(), 'ether')
   }
 }
