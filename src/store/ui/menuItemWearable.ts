@@ -205,7 +205,7 @@ export class WearableMenuItem extends MenuItem {
     })
 
     this.rarityTextShape = TextShape.create(this.rarityTextRoot)
-    this.rarityTextShape.text = _item.rarity
+    this.rarityTextShape.text = typeof _item.rarity === 'string' ? _item.rarity : ''
     this.rarityTextShape.textColor = textColor1
     this.rarityTextShape.fontSize = detailFontSize
     this.rarityTextShape.font = Font.F_SANS_SERIF
@@ -283,7 +283,11 @@ export class WearableMenuItem extends MenuItem {
     })
 
     this.availableText = TextShape.create(this.availableCounter)
-    this.availableText.text = _item.available + '/' + _item.maxSupply
+    this.availableText.text =
+      typeof _item.available === 'number' && typeof _item.maxSupply === 'number'
+        ? `${_item.available}/${_item.maxSupply}`
+        : ''
+
     this.availableText.textColor = textColor1
     this.availableText.fontSize = detailFontSize
     this.availableText.font = Font.F_SANS_SERIF
@@ -417,7 +421,7 @@ export class WearableMenuItem extends MenuItem {
       this.priceTextShape.text = 'Out of stock'
     }
     // rarity
-    this.rarityTextShape.text = _item.rarity
+    this.rarityTextShape.text = typeof _item.rarity === 'string' ? _item.rarity : ''
     switch (_item.rarity) {
       case 'common': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.commonBGShape })
@@ -457,7 +461,10 @@ export class WearableMenuItem extends MenuItem {
     }
 
     // available
-    this.availableText.text = _item.available + '/' + _item.maxSupply
+    this.availableText.text =
+      typeof _item.available === 'number' && typeof _item.maxSupply === 'number'
+        ? `${_item.available}/${_item.maxSupply}`
+        : ''
 
     // update buy button
     this.buyButtonText.text = 'BUY'
