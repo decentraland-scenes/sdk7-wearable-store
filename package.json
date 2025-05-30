@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@dcl/asset-packs": "latest",
-    "@dcl/js-runtime": "7.8.8",
+    "@dcl/js-runtime": "7.8.7",
     "@dcl/sdk": "latest",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
