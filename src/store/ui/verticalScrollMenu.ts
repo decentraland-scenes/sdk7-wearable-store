@@ -172,9 +172,8 @@ export class VerticalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_SECONDARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'USE E/F TO SCROLL EVENTS'
+            showFeedback: false,
+            maxDistance: 20
           }
         }
       ]
@@ -242,18 +241,16 @@ export class VerticalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_PRIMARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false,
+            maxDistance: 20
           }
         },
         {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_SECONDARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false,
+            maxDistance: 20
           }
         }
       ]
@@ -273,10 +270,10 @@ export class VerticalScrollMenu {
         // }
       }
       if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN, clickBox)) {
-        this.scrollDown()
+        this.scrollUp()
       }
       if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN, clickBox)) {
-        this.scrollUp()
+        this.scrollDown()
       }
     })
 
@@ -385,7 +382,33 @@ export class VerticalScrollMenu {
     for (let i = 0; i < this.items.length; i++) {
       AnimatedItem.getMutable(this.items[i].entity).isHighlighted = false
       this.deselectItem(this.items[i], true)
-      // this.clickBoxes[i].getComponent(OnPointerDown).hoverText = "SELECT";
+      PointerEvents.getMutable(this.clickBoxes[i]).pointerEvents = [
+        {
+          eventType: PointerEventType.PET_DOWN,
+          eventInfo: {
+            button: InputAction.IA_POINTER,
+            showFeedback: true,
+            maxDistance: 20,
+            hoverText: 'SELECT'
+          }
+        },
+        {
+          eventType: PointerEventType.PET_DOWN,
+          eventInfo: {
+            button: InputAction.IA_PRIMARY,
+            showFeedback: false,
+            maxDistance: 20,
+          }
+        },
+        {
+          eventType: PointerEventType.PET_DOWN,
+          eventInfo: {
+            button: InputAction.IA_SECONDARY,
+            showFeedback: false,
+            maxDistance: 20,
+          }
+        }
+      ]
     }
   }
 
