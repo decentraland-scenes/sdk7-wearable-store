@@ -230,7 +230,7 @@ export class HorizontalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_PRIMARY,
-            showFeedback: false,
+            showFeedback: true,
             maxDistance: 20,
             hoverText: 'USE E/F TO SCROLL EVENTS'
           }
@@ -239,7 +239,7 @@ export class HorizontalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_SECONDARY,
-            showFeedback: false,
+            showFeedback: true,
             maxDistance: 20,
             hoverText: 'USE E/F TO SCROLL EVENTS'
           }
@@ -309,18 +309,14 @@ export class HorizontalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_PRIMARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false
           }
         },
         {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_SECONDARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false
           }
         }
       ]
@@ -344,18 +340,14 @@ export class HorizontalScrollMenu {
               eventType: PointerEventType.PET_DOWN,
               eventInfo: {
                 button: InputAction.IA_PRIMARY,
-                showFeedback: true,
-                maxDistance: 20,
-                hoverText: 'DESELECT'
+                showFeedback: false
               }
             },
             {
               eventType: PointerEventType.PET_DOWN,
               eventInfo: {
                 button: InputAction.IA_SECONDARY,
-                showFeedback: true,
-                maxDistance: 20,
-                hoverText: 'DESELECT'
+                showFeedback: false
               }
             }
           ]
@@ -376,18 +368,14 @@ export class HorizontalScrollMenu {
               eventType: PointerEventType.PET_DOWN,
               eventInfo: {
                 button: InputAction.IA_PRIMARY,
-                showFeedback: true,
-                maxDistance: 20,
-                hoverText: 'SELECT'
+                showFeedback: false
               }
             },
             {
               eventType: PointerEventType.PET_DOWN,
               eventInfo: {
                 button: InputAction.IA_SECONDARY,
-                showFeedback: true,
-                maxDistance: 20,
-                hoverText: 'SELECT'
+                showFeedback: false
               }
             }
           ]
@@ -548,18 +536,14 @@ export class HorizontalScrollMenu {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_PRIMARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false
           }
         },
         {
           eventType: PointerEventType.PET_DOWN,
           eventInfo: {
             button: InputAction.IA_SECONDARY,
-            showFeedback: true,
-            maxDistance: 20,
-            hoverText: 'SELECT'
+            showFeedback: false
           }
         }
       ]
