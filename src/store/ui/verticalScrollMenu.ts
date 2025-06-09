@@ -420,7 +420,7 @@ export class VerticalScrollMenu {
 
   showItem(_id: number): void {
     if (_id < this.itemRoots.length && _id >= 0) {
-      this.itemRoots[_id] = engine.addEntity()
+      this.itemRoots[_id] = engine.addEntity() 
       Transform.getMutable(this.items[_id].entity).scale = Vector3.create(0.1, 0.1, 0.1)
       Transform.getMutable(this.items[_id].entity).parent = this.itemRoots[_id]
 

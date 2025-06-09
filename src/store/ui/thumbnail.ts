@@ -1,5 +1,5 @@
 import { engine, Material, MeshRenderer, Transform, type TransformType } from '@dcl/sdk/ecs'
-import { Vector3 } from '@dcl/sdk/math'
+import { Quaternion, Vector3 } from '@dcl/sdk/math'
 
 export class ThumbnailPlane {
   public entity = engine.addEntity()
@@ -30,7 +30,8 @@ export class ThumbnailPlane {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       position: _transform.position || Vector3.Zero(),
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      scale: _transform.scale || Vector3.One()
+      scale: _transform.scale || Vector3.One(),
+      rotation: Quaternion.fromEulerDegrees(0,0,90)
     })
 
     // engine.addEntity(this)
