@@ -568,7 +568,7 @@ export class HorizontalScrollMenu {
 
   halveSizeItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
-      if (engine.getEntityState(this.itemRoots[_id]) === 1) {
+      if (AnimatedItem.getOrNull(this.items[_id].entity) !== null) {
         const originalTransform = AnimatedItem.getMutable(this.items[_id].entity)
         originalTransform.defaultTransform_scale.x = this.items[_id].defaultItemScale.x * 0.25
         originalTransform.defaultTransform_scale.y = this.items[_id].defaultItemScale.y * 0.25
