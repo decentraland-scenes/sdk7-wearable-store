@@ -63,6 +63,8 @@ export class CollectionMenuItem extends MenuItem {
         this.highlightItemScale.z
       ),
       highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+      animFraction: 0,
+      animVeclocity: 0,
       speed: 2
     })
 
@@ -112,7 +114,10 @@ export class CollectionMenuItem extends MenuItem {
       defaultTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
       highlightTransform_position: Vector3.create(0, 0, 0),
       highlightTransform_scale: Vector3.create(1, 1, 1),
-      highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+      highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
+            animFraction: 0,
+      animVeclocity: 0,
+      speed: 2
     })
     Transform.getMutable(this.highlightFrame).parent = this.entity
   }

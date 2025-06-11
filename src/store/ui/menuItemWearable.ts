@@ -94,7 +94,9 @@ export class WearableMenuItem extends MenuItem {
         this.defaultItemScale.z * this.scaleMultiplier
       ),
       highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-      speed: 2
+      speed: 2,
+      animFraction: 0,
+      animVeclocity: 0
     })
 
     // event card root
@@ -148,7 +150,9 @@ export class WearableMenuItem extends MenuItem {
       highlightTransform_position: Vector3.create(this.cardOffset.x, this.cardOffset.y - 0.51, this.cardOffset.z),
       highlightTransform_scale: Vector3.create(1, 1, 1),
       highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-      speed: 1.5
+      speed: 1.5,
+      animFraction: 0,
+      animVeclocity: 0
     })
     Transform.getMutable(this.detailsCard).parent = this.detailsRoot
 
@@ -325,7 +329,9 @@ export class WearableMenuItem extends MenuItem {
       highlightTransform_position: Vector3.create(0.52, 0, -0.05),
       highlightTransform_scale: Vector3.create(0.75, 0.75, 0.75),
       highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-      speed: 1.8
+      speed: 1.8,
+      animFraction: 0,
+      animVeclocity: 0
     })
 
     this.buyButtonTextRoot = engine.addEntity()
@@ -390,7 +396,9 @@ export class WearableMenuItem extends MenuItem {
       highlightTransform_position: Vector3.create(this.cardOffset.x, this.cardOffset.y, this.cardOffset.z + 0.05),
       highlightTransform_scale: Vector3.create(1, 1, 1),
       highlightTransform_rotation: Quaternion.fromEulerDegrees(0, 0, 0),
-      speed: 6
+      speed: 6,
+      animFraction: 0,
+      animVeclocity: 0
     })
 
     this.highlightFrame = engine.addEntity()
