@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { engine, Schemas, Transform } from '@dcl/sdk/ecs'
 import { Vector3, Quaternion } from '@dcl/sdk/math'
 
@@ -22,28 +23,69 @@ export function itemAnimationSystem(dt: number): void {
   for (const [entity] of engine.getEntitiesWith(AnimatedItem, Transform)) {
     const info = AnimatedItem.getMutable(entity)
     const transform = Transform.getMutable(entity)
-
-    const fraction = info.animFraction
-    const speed = info.speed
-
     if (!info.isHighlighted) {
-      if (fraction > 0) {
-        info.animFraction = Math.max(0, fraction - speed * dt)
-        const t = 1 - easeOutExp(1 - info.animFraction)
-
-        transform.position = Vector3.lerp(info.defaultTransform_position, info.highlightTransform_position, t)
-        transform.scale = Vector3.lerp(info.defaultTransform_scale, info.highlightTransform_scale, t)
-        transform.rotation = Quaternion.slerp(info.defaultTransform_rotation, info.highlightTransform_rotation, t)
+      if (info.animFraction > 0) {
+        info.animFraction -= info.speed * dt
+        if (info.defaultTransform_scale && info.highlightTransform_scale) {
+          transform.scale = Vector3.lerp(
+            info.defaultTransform_scale,
+            info.highlightTransform_scale,
+            1 - easeOutExp(1 - info.animFraction)
+          )
+        }
+        if (info.defaultTransform_position && info.highlightTransform_position) {
+          transform.position = Vector3.lerp(
+            info.defaultTransform_position,
+            info.highlightTransform_position,
+            1 - easeOutExp(1 - info.animFraction)
+          )
+        }
+        if (info.defaultTransform_rotation && info.highlightTransform_rotation) {
+          transform.rotation = Quaternion.slerp(
+            info.defaultTransform_rotation,
+            info.highlightTransform_rotation,
+            1 - easeOutExp(1 - info.animFraction)
+          )
+        }
+      } else {
+        info.animFraction = 0
+        if (info.defaultTransform_scale) transform.scale = info.defaultTransform_scale
+        if (info.defaultTransform_position) transform.position = info.defaultTransform_position
+        if (info.defaultTransform_rotation) transform.rotation = info.defaultTransform_rotation
       }
     } else {
-      if (fraction < 1) {
-        info.animFraction = Math.min(1, fraction + speed * dt)
-        const t = easeOutExp(info.animFraction)
+      if (info.animFraction < 1) {
+        info.animFraction += info.speed * dt
 
-        transform.position = Vector3.lerp(info.defaultTransform_position, info.highlightTransform_position, t)
-        transform.scale = Vector3.lerp(info.defaultTransform_scale, info.highlightTransform_scale, t)
-        transform.rotation = Quaternion.slerp(info.defaultTransform_rotation, info.highlightTransform_rotation, t)
+        if (info.defaultTransform_scale && info.highlightTransform_scale)
+          transform.scale = Vector3.lerp(
+            info.defaultTransform_scale,
+            info.highlightTransform_scale,
+            easeOutExp(info.animFraction)
+          )
+        if (info.defaultTransform_position && info.highlightTransform_position)
+          transform.position = Vector3.lerp(
+            info.defaultTransform_position,
+            info.highlightTransform_position,
+            easeOutExp(info.animFraction)
+          )
+        if (info.defaultTransform_rotation && info.highlightTransform_rotation)
+          transform.rotation = Quaternion.slerp(
+            info.defaultTransform_rotation,
+            info.highlightTransform_rotation,
+            easeOutExp(info.animFraction)
+          )
+        // transform.scale = this.springVec3(info.highlightTransform_scale, transform.scale, info.animVeclocity, info.speed*dt)
+        // transform.position = this.springVec3(info.highlightTransform_position, transform.position, info.animVeclocity, info.speed*dt)
+      } else {
+        info.animFraction = 1
+        if (info.highlightTransform_scale) transform.scale = info.highlightTransform_scale
+        if (info.highlightTransform_position) transform.position = info.highlightTransform_position
+        if (info.highlightTransform_rotation) transform.rotation = info.highlightTransform_rotation
       }
+
+      // transform.scale = this.springVec3(info.defaultTransform_scale, transform.scale, info.animVeclocity, info.speed*dt)
+      // transform.position = this.springVec3(info.defaultTransform_position, transform.position, info.animVeclocity, info.speed*dt)
     }
   }
 }
