@@ -22,15 +22,15 @@ export function createWearableStore(transform: TransformType, collectionsList?: 
   const wearablesMenu = createWearablesHorizontalMenu(transform, 2)
 
   // -- Collections Menu
-  const collectionsMenu = createCollectionsVerticalMenu( 
-    {
-      // position: new Vector3(posVec.x -1.6, posVec.y +2.2, posVec.z-0.6),
-      position: Vector3.create(1.6, 2.05, -0.5),
-      scale: Vector3.create(1, 1, 1),
-      rotation: Quaternion.fromEulerDegrees(0, 0, 0)
-    },
-    wearablesMenu,
-    7
-  )
-  void updateCollectionsMenu(collectionsMenu, wearablesMenu, 10, true, collectionsList)
+  // const collectionsMenu = createCollectionsVerticalMenu( 
+  //   {
+  //     // position: new Vector3(posVec.x -1.6, posVec.y +2.2, posVec.z-0.6),
+  //     position: Vector3.create(1.6, 2.05, -0.5),
+  //     scale: Vector3.create(1, 1, 1),
+  //     rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+  //   },
+  //   wearablesMenu,
+  //   7
+  // )
+  // void updateCollectionsMenu(collectionsMenu, wearablesMenu, 10, true, collectionsList)
 }

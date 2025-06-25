@@ -405,6 +405,7 @@ export class HorizontalScrollMenu {
   }
 
   removeMenuItem(index: number): void {
+    console.log('item removed', index)
     if (index > -1) {
       // engine.removeEntity(this.items[index])
       if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
@@ -551,21 +552,30 @@ export class HorizontalScrollMenu {
   }
 
   hideItem(_id: number): void {
-    if (_id < this.items.length && _id >= 0) {
-      if (engine.getEntityState(this.itemRoots[_id]) === 1) engine.removeEntity(this.itemRoots[_id])
+    if (_id < this.itemRoots.length && _id >= 0) {
+      if (Transform.has(this.itemRoots[_id])) {
+        Transform.getMutable(this.itemRoots[_id]).parent = undefined
+      }
     }
   }
 
   showItem(_id: number): void {
     if (_id < this.itemRoots.length && _id >= 0) {
-      Transform.getMutable(this.itemRoots[_id]).parent = this.scrollerRootA
-      Transform.getMutable(this.items[_id].entity).parent = this.itemRoots[_id]
-      this.itemRoots[_id] = engine.addEntity()
-      // this.items[_id].getComponent(Transform).scale.setAll(0)
-      Transform.getMutable(this.items[_id].entity).position.z = -0.0
+      const root = this.itemRoots[_id]
+
+      if (!Transform.has(root)) {
+        Transform.create(root, {
+          position: Vector3.create(this.spacing * _id, 0, 0)
+        })
+      }
+
+      const item = this.items[_id].entity
+      Transform.getMutable(root).parent = this.scrollerRootA
+      Transform.getMutable(item).parent = root
+      Transform.getMutable(item).position.z = -0.0
     }
   }
-
+ 
   halveSizeItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
       if (AnimatedItem.getOrNull(this.items[_id].entity) !== null) {
