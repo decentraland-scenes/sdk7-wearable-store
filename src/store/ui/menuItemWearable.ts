@@ -22,7 +22,6 @@ import {
 } from '@dcl/sdk/ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { cleanString, ethClean, wordWrap } from './helperFunctions'
-import { item } from '../blockchain/fetch'
 
 // const clickableGroup = engine.getComponentGroup(ClickableItem, Transform)
 
