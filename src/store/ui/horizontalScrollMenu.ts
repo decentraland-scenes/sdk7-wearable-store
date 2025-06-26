@@ -575,7 +575,7 @@ export class HorizontalScrollMenu {
       Transform.getMutable(item).position.z = -0.0
     }
   }
- 
+
   halveSizeItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
       if (AnimatedItem.getOrNull(this.items[_id].entity) !== null) {
@@ -629,7 +629,7 @@ export class HorizontalScrollMenu {
   }
 
   updateTitle(_title: string): void {
-    this.topTextShape.text = wordWrap(_title, 40, 2)
+    TextShape.getMutable(this.topText).text = wordWrap(_title, 40, 2)
   }
 }
 
