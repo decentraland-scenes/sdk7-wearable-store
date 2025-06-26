@@ -269,7 +269,7 @@ export class VerticalScrollMenu {
         //     sfx.menuDeselectSource.playOnce()
         // }
       }
-      if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN, clickBox)) {
+      if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN, clickBox)) {
         this.scrollUp()
       }
       if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN, clickBox)) {
@@ -295,6 +295,7 @@ export class VerticalScrollMenu {
   }
 
   scrollUp(): void {
+    console.log('up')
     // F
     const scrollInfo = VerticalScroller.get(this.scrollerRootA)
 
@@ -324,6 +325,7 @@ export class VerticalScrollMenu {
   }
 
   scrollDown(): void {
+    console.log('down')
     // E
     const scrollInfo = VerticalScroller.get(this.scrollerRootA)
 
@@ -397,7 +399,7 @@ export class VerticalScrollMenu {
           eventInfo: {
             button: InputAction.IA_PRIMARY,
             showFeedback: false,
-            maxDistance: 20,
+            maxDistance: 20
           }
         },
         {
@@ -405,7 +407,7 @@ export class VerticalScrollMenu {
           eventInfo: {
             button: InputAction.IA_SECONDARY,
             showFeedback: false,
-            maxDistance: 20,
+            maxDistance: 20
           }
         }
       ]
@@ -414,19 +416,31 @@ export class VerticalScrollMenu {
 
   hideItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
-      if (engine.getEntityState(this.itemRoots[_id]) === 1) engine.removeEntity(this.itemRoots[_id])
+      if (Transform.has(this.itemRoots[_id])) {
+        const transform = Transform.getMutable(this.itemRoots[_id])
+        transform.scale = Vector3.create(0, 0, 0) // oculta visualmente
+      }
     }
   }
 
   showItem(_id: number): void {
-    if (_id < this.itemRoots.length && _id >= 0) {
-      this.itemRoots[_id] = engine.addEntity() 
-      Transform.getMutable(this.items[_id].entity).scale = Vector3.create(0.1, 0.1, 0.1)
+    if (_id < this.items.length && _id >= 0) {
+      if (!Transform.has(this.itemRoots[_id])) {
+        Transform.create(this.itemRoots[_id], {
+          position: Vector3.create(0, this.verticalSpacing * _id, 0),
+          scale: Vector3.create(1, 1, 1)
+        })
+      } else {
+        const transform = Transform.getMutable(this.itemRoots[_id])
+        transform.scale = Vector3.create(1, 1, 1) // vuelve a hacer visible
+      }
+
+      if (!Transform.has(this.items[_id].entity)) {
+        Transform.create(this.items[_id].entity)
+      }
+
       Transform.getMutable(this.items[_id].entity).parent = this.itemRoots[_id]
-
       Transform.getMutable(this.itemRoots[_id]).parent = this.scrollerRootA
-
-      // this.items[_id].getComponent(Transform).position.z  = 2
     }
   }
 
