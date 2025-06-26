@@ -7,31 +7,12 @@ import { collectionPlaceholder, wearableItemPlaceholder } from './menuPlaceholde
 import { VerticalScrollMenu } from './verticalScrollMenu'
 import { menuTopEventsShape, roundedSquareAlpha, wardrobeShape } from './resources/resources'
 import { createMANAComponent } from '../blockchain/mana'
-import * as f from '../blockchain/fetch'
+// import type * as f from '../blockchain/fetch'
+import { getCollectionsFromCryptoWearables } from '../blockchain/wearablesAdapter'
 import { getPlayer } from '@dcl/sdk/src/players'
+import { type Collections } from '../blockchain/wearablesAdapter'
 
 const STORE_CONTRACT_ADDRESS = '0xf64Dc33a192e056bb5f0e5049356a0498B502D50'
-
-export type Collection = {
-  id: string
-  name: string
-  isApproved: boolean
-  owner: string
-  urn: string
-  items: Array<{
-    metadata: {
-      wearable?: { name: string }
-      emote?: { name: string }
-    }
-    image: string
-    price: string
-    rarity: string
-    available: string
-    maxSupply: string
-    blockchainId: string
-    urn: string
-  }>
-}
 
 // WEARABLES MENU IN WARDROBE
 export function createWearablesHorizontalMenu(_transform: TransformType, _visibleItems: number): HorizontalScrollMenu {
@@ -194,16 +175,26 @@ export async function updateCollectionsMenu(
   _addLoadMoreButton: boolean,
   collectionsList?: string[]
 ): Promise<void> {
-  console.log(collectionsList)
+  // HARDCODED
+  collectionsList = [
+    'urn:decentraland:matic:collections-v2:0xb5b31765f355e75b3e468dbb742aa0a87db2f425',
+    'urn:decentraland:matic:collections-v2:0x2e78cd7edcc3364724620c511355b27deaff56b3',
+    'urn:decentraland:matic:collections-v2:0x793b73e9f7c8d3df3fb16f4a23568838baf2eb0a',
+    'urn:decentraland:matic:collections-v2:0xc494f4cdcf95de946a3e36d4cee7baf9c87f08de',
+    'urn:decentraland:matic:collections-v2:0xfe91e9cec6e477c7275a956b6995ea0ca571abb8',
+    'urn:decentraland:matic:collections-v2:0xc717713847161131034deb6b7b907e35f2452dd1',
+    'urn:decentraland:matic:collections-v2:0xd76e40795875297dbc46b06c0c75a51613bfb0cc' // OctoberFest 2022 added to test emotes
+  ]
   const mana = createMANAComponent()
-  let collections: f.Collections = []
-  if (collectionsList != null) {
-    for (const collectionURN of collectionsList) {
-      const collection = await f.collection(collectionURN)
-      if (collection !== undefined) collections.push(collection as unknown as f.Collection)
-    }
+  let collections: Collections = []
+
+  if (collectionsList != null && collectionsList.length > 0) {
+    console.log('AQUI', collectionsList)
+    collections = await getCollectionsFromCryptoWearables(collectionsList)
+    console.log(collections, 'list')
   } else {
-    collections = await f.storeCollections().then((r) => r.collections)
+    // Si no hay lista específica, puedes decidir usar otro fallback o dejar vacío
+    console.log('No se especificó collectionsList. Se usará lista vacía.')
   }
   const fromAddress = getPlayer()
 
