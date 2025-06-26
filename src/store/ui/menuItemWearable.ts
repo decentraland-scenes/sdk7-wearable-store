@@ -22,6 +22,7 @@ import {
 } from '@dcl/sdk/ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { cleanString, ethClean, wordWrap } from './helperFunctions'
+import { item } from '../blockchain/fetch'
 
 // const clickableGroup = engine.getComponentGroup(ClickableItem, Transform)
 
@@ -73,7 +74,7 @@ export class WearableMenuItem extends MenuItem {
     this.scale = Vector3.create(1, 0.5, 1)
     this.scaleMultiplier = 1.2
     this.defaultItemScale = Vector3.create(1, 1, 1)
-    this.cardOffset = Vector3.create(0, -0.5, -0)
+    this.cardOffset = Vector3.create(0, -0.5, 0.3)
     this.cardPadding = 0.45
     this.row1Height = 0.1
     this.row2Height = 0.25
@@ -287,10 +288,7 @@ export class WearableMenuItem extends MenuItem {
     })
 
     this.availableText = TextShape.create(this.availableCounter)
-    this.availableText.text =
-      typeof _item.available === 'number' && typeof _item.maxSupply === 'number'
-        ? `${_item.available}/${_item.maxSupply}`
-        : ''
+    this.availableText.text = _item.available + "/" + _item.maxSupply;
 
     this.availableText.textColor = textColor1
     this.availableText.fontSize = detailFontSize
@@ -337,9 +335,10 @@ export class WearableMenuItem extends MenuItem {
     this.buyButtonTextRoot = engine.addEntity()
     this.buyButtonText = TextShape.create(this.buyButtonTextRoot)
 
-    this.buyButtonText.textColor = Color4.fromHexString('#FFFFFF')
-    this.buyButtonText.font = Font.F_SANS_SERIF
-    this.buyButtonText.textAlign = TextAlignMode.TAM_MIDDLE_CENTER
+    
+    TextShape.getMutable(this.buyButtonTextRoot).textColor = Color4.fromHexString('#FFFFFF')
+    TextShape.getMutable(this.buyButtonTextRoot).font = Font.F_SANS_SERIF
+    TextShape.getMutable(this.buyButtonTextRoot).textAlign = TextAlignMode.TAM_MIDDLE_CENTER
 
     Transform.create(this.buyButtonTextRoot, {
       position: Vector3.create(0, 0.0, -0.05),
@@ -423,56 +422,54 @@ export class WearableMenuItem extends MenuItem {
 
     // price
     if (_item.available > 1) {
-      if (ethClean(_item.price) === '0') this.priceTextShape.text = 'Free'
-      else this.priceTextShape.text = ethClean(_item.price) + ' MANA'
+       
+      if (ethClean(_item.price) === '0') TextShape.getMutable(this.priceTextRoot).text = 'Free'
+      else TextShape.getMutable(this.priceTextRoot).text = ethClean(_item.price) + ' MANA'
     } else {
-      this.priceTextShape.text = 'Out of stock'
+      TextShape.getMutable(this.priceTextRoot).text = 'Out of stock'
     }
     // rarity
-    this.rarityTextShape.text = typeof _item.rarity === 'string' ? _item.rarity : ''
+    TextShape.getMutable(this.rarityTextRoot).text = _item.rarity;
     switch (_item.rarity) {
       case 'common': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.commonBGShape })
-        this.rarityTextShape.textColor = resource.commonColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.commonColor
         break
       }
       case 'uncommon': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.uncommonBGShape })
-        this.rarityTextShape.textColor = resource.uncommonColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.uncommonColor
         break
       }
       case 'rare': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.rareBGShape })
-        this.rarityTextShape.textColor = resource.rareColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.rareColor
         break
       }
       case 'epic': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.epicBGShape })
-        this.rarityTextShape.textColor = resource.epicColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.epicColor
         break
       }
       case 'legendary': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.legendaryBGShape })
-        this.rarityTextShape.textColor = resource.legendaryColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.legendaryColor
         break
       }
       case 'mythic': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.mythicBGShape })
-        this.rarityTextShape.textColor = resource.mythicColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.mythicColor
         break
       }
       case 'unique': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.uniqueBGShape })
-        this.rarityTextShape.textColor = resource.uniqueColor
+        TextShape.getMutable(this.rarityTextRoot).textColor = resource.uniqueColor
         break
       }
     }
 
     // available
-    this.availableText.text =
-      typeof _item.available === 'number' && typeof _item.maxSupply === 'number'
-        ? `${_item.available}/${_item.maxSupply}`
-        : ''
+    TextShape.getMutable(this.availableCounter).text = _item.available + "/" + _item.maxSupply;
 
     // update buy button
     this.buyButtonText.text = 'BUY'

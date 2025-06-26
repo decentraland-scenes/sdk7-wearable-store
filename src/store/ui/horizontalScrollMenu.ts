@@ -184,7 +184,7 @@ export class HorizontalScrollMenu {
     this.topTextShape.fontSize = 3
 
     Transform.create(this.topText, {
-      position: Vector3.create(0, 2.45, 0.45),
+      position: Vector3.create(0, 2.45, 0.85),
       scale: Vector3.create(0.4, 0.4, 0.4),
       rotation: Quaternion.fromEulerDegrees(0, 0, 0)
     })
