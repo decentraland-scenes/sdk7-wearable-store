@@ -107,6 +107,7 @@ export class WearableMenuItem extends MenuItem {
     })
     Transform.getMutable(this.itemCard).parent = this.entity
     // this.itemCard.addComponent(resource.detailsCardShape)
+    console.log('item image',_item.image)
 
     this.thumbNail = new ThumbnailPlane(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -416,6 +417,7 @@ export class WearableMenuItem extends MenuItem {
       this.thumbNail.updateImage(_item.image)
     } else {
       // this.thumbNail.updateImage(new Texture(fixImageUrl(_item.image)))
+      console.log('itemmmm image',_item.image)
       this.thumbNail.updateImage(_item.image)
     }
 

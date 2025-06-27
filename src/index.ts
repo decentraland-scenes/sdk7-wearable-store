@@ -1,11 +1,4 @@
 import {
-  Billboard,
-  Material,
-  MeshRenderer,
-  TextShape,
-  Transform,
-  engine,
-  executeTask,
   type TransformType
 } from '@dcl/sdk/ecs'
 import { Quaternion, Vector3 } from '@dcl/sdk/math'
@@ -14,7 +7,6 @@ import {
   createCollectionsVerticalMenu,
   updateCollectionsMenu
 } from './store/ui/menuMainFunctions'
-import * as crypto from 'dcl-crypto-toolkit'
 // import { getCollectionNamesFromServer } from './store/blockchain/fetchWearablesAdapter'
 
 export function main(): void {
@@ -34,51 +26,51 @@ export function main(): void {
       'urn:decentraland:matic:collections-v2:0x00c1f53e8e1b97e619bdf555fff187521b3e3e17'
     ]
   )
-  executeTask(async () => {
-    const wearables = await crypto.wearable.getListOfWearables({
-      collectionIds: ['urn:decentraland:matic:collections-v2:0xc717713847161131034deb6b7b907e35f2452dd1']
-    })
-    console.log(wearables, 'HERE')
-    wearables.forEach((wearable, index) => {
-      const baseUrl = wearable.baseUrl ?? 'https://peer.decentraland.org/content/contents/'
-      const imageUrl = baseUrl + wearable.thumbnail
+//   executeTask(async () => {
+//     const wearables = await crypto.wearable.getListOfWearables({
+//       collectionIds: ['urn:decentraland:matic:collections-v2:0xc717713847161131034deb6b7b907e35f2452dd1']
+//     })
+//     console.log(wearables, 'HERE')
+//     wearables.forEach((wearable, index) => {
+//       const baseUrl = wearable.baseUrl ?? 'https://peer.decentraland.org/content/contents/'
+//       const imageUrl = baseUrl + wearable.thumbnail
 
-      const position = Vector3.create(index * 3 + 1, 1, 1)
-      const textEntity = engine.addEntity()
-      Transform.create(textEntity, {
-        position: Vector3.create(position.x, position.y + 1.2, position.z)
-      })
-      TextShape.create(textEntity, {
-        text: wearable.i18n[0]?.text ?? wearable.id,
-        fontSize: 2
-      })
-      Billboard.create(textEntity, {})
+//       const position = Vector3.create(index * 3 + 1, 1, 1)
+//       const textEntity = engine.addEntity()
+//       Transform.create(textEntity, {
+//         position: Vector3.create(position.x, position.y + 1.2, position.z)
+//       })
+//       TextShape.create(textEntity, {
+//         text: wearable.i18n[0]?.text ?? wearable.id,
+//         fontSize: 2
+//       })
+//       Billboard.create(textEntity, {})
 
-      const imageEntity = engine.addEntity()
-      Transform.create(imageEntity, {
-        position,
-        scale: Vector3.create(2, 2, 1)
-      })
-      MeshRenderer.setPlane(imageEntity)
-      Billboard.create(imageEntity, {})
-      Material.setBasicMaterial(imageEntity, {
-        texture: Material.Texture.Common({ src: imageUrl }),
-        alphaTest: 0.5
-      })
-    })
-    // const myCollections = [
-    //   'urn:decentraland:matic:collections-v2:0x02048643e32f893406dc2012a2f48a3023645612',
-    //   'urn:decentraland:matic:collections-v2:0x01cc9871ef405b71dd797c1423c7771942fd8258',
-    //   'urn:decentraland:matic:collections-v2:0x01b35f5ed8a2d01d5746ec691165eceb64517202',
-    //   'urn:decentraland:matic:collections-v2:0x016a61feb6377239e34425b82e5c4b367e52457f',
-    //   'urn:decentraland:matic:collections-v2:0x0162ba693322bcc4c9198547fe7fbb4fa751db95',
-    //   'urn:decentraland:matic:collections-v2:0x00ea0379451527a5cd56e2c4bb0eac950ccb79fa',
-    //   'urn:decentraland:matic:collections-v2:0x00c1f53e8e1b97e619bdf555fff187521b3e3e17'
-    // ]
+//       const imageEntity = engine.addEntity()
+//       Transform.create(imageEntity, {
+//         position,
+//         scale: Vector3.create(2, 2, 1)
+//       })
+//       MeshRenderer.setPlane(imageEntity)
+//       Billboard.create(imageEntity, {})
+//       Material.setBasicMaterial(imageEntity, {
+//         texture: Material.Texture.Common({ src: imageUrl }),
+//         alphaTest: 0.5
+//       })
+//     })
+//     // const myCollections = [
+//     //   'urn:decentraland:matic:collections-v2:0x02048643e32f893406dc2012a2f48a3023645612',
+//     //   'urn:decentraland:matic:collections-v2:0x01cc9871ef405b71dd797c1423c7771942fd8258',
+//     //   'urn:decentraland:matic:collections-v2:0x01b35f5ed8a2d01d5746ec691165eceb64517202',
+//     //   'urn:decentraland:matic:collections-v2:0x016a61feb6377239e34425b82e5c4b367e52457f',
+//     //   'urn:decentraland:matic:collections-v2:0x0162ba693322bcc4c9198547fe7fbb4fa751db95',
+//     //   'urn:decentraland:matic:collections-v2:0x00ea0379451527a5cd56e2c4bb0eac950ccb79fa',
+//     //   'urn:decentraland:matic:collections-v2:0x00c1f53e8e1b97e619bdf555fff187521b3e3e17'
+//     // ]
 
-    // const names = await getCollectionNamesFromServer(myCollections)
-    // console.log('Matched Collection Names:', names)
-  })
+//     // const names = await getCollectionNamesFromServer(myCollections)
+//     // console.log('Matched Collection Names:', names)
+//   })
 }
 
 export function createWearableStore(transform: TransformType, collectionsList?: string[]): void {

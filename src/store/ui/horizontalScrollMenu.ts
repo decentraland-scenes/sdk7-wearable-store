@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AudioSource,
   engine,
@@ -422,18 +423,14 @@ export class HorizontalScrollMenu {
 
   scrollUp(): void {
     const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
-    const centerOffset = Math.floor(this.visibleItemCount / 2)
-
-    console.log('current item F', scrollInfo.currentItem)
 
     if (scrollInfo.currentItem < scrollInfo.stops - 1) {
-      scrollUp(this.scrollerRootA)
+      scrollInfo.currentItem += 1
 
-      // Ajustamos el scrollTarget para centrar el ítem
-      scrollInfo.scrollTarget = scrollInfo.base - (scrollInfo.currentItem - centerOffset) * scrollInfo.scrollStep
+      // CENTRAMOS correctamente
+      scrollInfo.scrollTarget = -scrollInfo.currentItem * this.spacing
 
       this.deselectAll()
-
       this.showItem(scrollInfo.currentItem + (this.visibleItemCount - 1))
       this.hideItem(scrollInfo.currentItem - 2)
       this.halveSizeItem(scrollInfo.currentItem - 1)
@@ -442,25 +439,20 @@ export class HorizontalScrollMenu {
 
       AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
     } else {
-      Transform.getMutable(this.scrollerRootA).position.x -= 0.3
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
   }
 
   scrollDown(): void {
     const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
-    const centerOffset = Math.floor(this.visibleItemCount / 2)
-
-    console.log('current item e', scrollInfo.currentItem)
 
     if (scrollInfo.currentItem > 0) {
-      scrollDown(this.scrollerRootA)
+      scrollInfo.currentItem -= 1
 
-      // Ajustamos el scrollTarget para centrar el ítem
-      scrollInfo.scrollTarget = scrollInfo.base - (scrollInfo.currentItem - centerOffset) * scrollInfo.scrollStep
+      // CENTRAMOS correctamente
+      scrollInfo.scrollTarget = -scrollInfo.currentItem * this.spacing
 
       this.deselectAll()
-
       this.showItem(scrollInfo.currentItem - 1)
       this.hideItem(scrollInfo.currentItem + this.visibleItemCount)
       this.halveSizeItem(scrollInfo.currentItem + this.visibleItemCount - 1)
@@ -469,7 +461,6 @@ export class HorizontalScrollMenu {
 
       AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
     } else {
-      Transform.getMutable(this.scrollerRootA).position.x += 0.3
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
   }
@@ -602,10 +593,12 @@ export class HorizontalScrollMenu {
 
   resetScroll(): void {
     this.deselectAll()
-    reset(this.scrollerRootA)
-    // this.scrollerRootA.getComponent(VerticalScroller).base = 0
-    HorizontalScroller.getMutable(this.scrollerRootA).scrollStep = this.spacing
-    HorizontalScroller.getMutable(this.scrollerRootA).stops = this.items.length
+
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+    scrollInfo.currentItem = 0
+    scrollInfo.scrollTarget = 0
+    scrollInfo.scrollStep = this.spacing
+    scrollInfo.stops = this.items.length
 
     for (let i = 0; i < this.items.length; i++) {
       if (i < this.visibleItemCount) {
@@ -613,12 +606,13 @@ export class HorizontalScrollMenu {
       } else {
         this.hideItem(i)
       }
-      // reset menu item scaling
+
       Vector3.copyFrom(
         this.items[i].defaultItemScale,
         AnimatedItem.getMutable(this.items[i].entity).defaultTransform_scale
       )
     }
+
     Transform.getMutable(this.scrollerRootA).position.x = 0
   }
 
