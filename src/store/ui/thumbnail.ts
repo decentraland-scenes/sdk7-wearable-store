@@ -39,8 +39,8 @@ export class ThumbnailPlane {
   }
 
   updateImage(texture: string): void {
-    const baseUrl = 'https://peer.decentraland.org/content/contents/'
-    const imageUrl = baseUrl + texture
+    // const baseUrl = 'https://peer.decentraland.org/content/contents/'
+    const imageUrl =   texture
     Material.deleteFrom(this.entity)
     Material.setPbrMaterial(this.entity, {
       texture: Material.Texture.Common({
