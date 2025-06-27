@@ -88,7 +88,8 @@ export function createWearableStore(transform: TransformType, collectionsList?: 
   // -- Collections Menu
   const collectionsMenu = createCollectionsVerticalMenu(
     {
-      position: Vector3.create(1.6, 2.05, -0.5),
+      // position: new Vector3(posVec.x -1.6, posVec.y +2.2, posVec.z-0.6),
+      position: Vector3.create(1.6, 2.05, 0.4),
       scale: Vector3.create(1, 1, 1),
       rotation: Quaternion.fromEulerDegrees(0, 0, 0)
     },

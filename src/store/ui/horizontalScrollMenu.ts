@@ -184,7 +184,7 @@ export class HorizontalScrollMenu {
     this.topTextShape.fontSize = 3
 
     Transform.create(this.topText, {
-      position: Vector3.create(0, 2.45, 0.45),
+      position: Vector3.create(0, 2.45, 0.85),
       scale: Vector3.create(0.4, 0.4, 0.4),
       rotation: Quaternion.fromEulerDegrees(0, 0, 0)
     })
@@ -421,60 +421,54 @@ export class HorizontalScrollMenu {
   }
 
   scrollUp(): void {
-    const scrollInfo = HorizontalScroller.get(this.scrollerRootA)
-    // scrollable
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+    const centerOffset = Math.floor(this.visibleItemCount / 2)
+
+    console.log('current item F', scrollInfo.currentItem)
+
     if (scrollInfo.currentItem < scrollInfo.stops - 1) {
       scrollUp(this.scrollerRootA)
+
+      // Ajustamos el scrollTarget para centrar el ítem
+      scrollInfo.scrollTarget = scrollInfo.base - (scrollInfo.currentItem - centerOffset) * scrollInfo.scrollStep
+
       this.deselectAll()
 
-      // show new topmost item
       this.showItem(scrollInfo.currentItem + (this.visibleItemCount - 1))
-
-      // hide bottom item
       this.hideItem(scrollInfo.currentItem - 2)
-
-      // make the second item from the bottom smaller (avoid clipping through base)
       this.halveSizeItem(scrollInfo.currentItem - 1)
-
-      // make second item from the bottom full size
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount - 2)
-
       this.halveSizeAllExcept(scrollInfo.currentItem)
-      // this.rotateAll(scrollInfo.currentItem)
+
       AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
-    }
-    // reached the end
-    else {
+    } else {
       Transform.getMutable(this.scrollerRootA).position.x -= 0.3
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
   }
 
   scrollDown(): void {
-    const scrollInfo = HorizontalScroller.get(this.scrollerRootA)
-    // scrollable
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+    const centerOffset = Math.floor(this.visibleItemCount / 2)
+
+    console.log('current item e', scrollInfo.currentItem)
+
     if (scrollInfo.currentItem > 0) {
       scrollDown(this.scrollerRootA)
+
+      // Ajustamos el scrollTarget para centrar el ítem
+      scrollInfo.scrollTarget = scrollInfo.base - (scrollInfo.currentItem - centerOffset) * scrollInfo.scrollStep
+
       this.deselectAll()
 
-      // show new bottom item
       this.showItem(scrollInfo.currentItem - 1)
-
-      // hide topmost item
       this.hideItem(scrollInfo.currentItem + this.visibleItemCount)
-
-      // make the second item from the bottom smaller (avoid clipping through base)
       this.halveSizeItem(scrollInfo.currentItem + this.visibleItemCount - 1)
-      // make second item from the bottom full size
       this.fullSizeItem(scrollInfo.currentItem)
-
       this.halveSizeAllExcept(scrollInfo.currentItem)
-      // this.rotateAll(scrollInfo.currentItem)
 
       AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
-    }
-    // reached the end
-    else {
+    } else {
       Transform.getMutable(this.scrollerRootA).position.x += 0.3
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
@@ -575,7 +569,7 @@ export class HorizontalScrollMenu {
       Transform.getMutable(item).position.z = -0.0
     }
   }
- 
+
   halveSizeItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
       if (AnimatedItem.getOrNull(this.items[_id].entity) !== null) {
@@ -629,7 +623,7 @@ export class HorizontalScrollMenu {
   }
 
   updateTitle(_title: string): void {
-    this.topTextShape.text = wordWrap(_title, 40, 2)
+    TextShape.getMutable(this.topText).text = wordWrap(_title, 40, 2)
   }
 }
 

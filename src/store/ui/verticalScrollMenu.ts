@@ -270,10 +270,10 @@ export class VerticalScrollMenu {
         // }
       }
       if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN, clickBox)) {
-        this.scrollUp()
+        this.scrollDown()
       }
       if (inputSystem.isTriggered(InputAction.IA_SECONDARY, PointerEventType.PET_DOWN, clickBox)) {
-        this.scrollDown()
+        this.scrollUp()
       }
     })
 
