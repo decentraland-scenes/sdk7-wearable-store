@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AudioSource,
   engine,
@@ -184,7 +185,7 @@ export class HorizontalScrollMenu {
     this.topTextShape.fontSize = 3
 
     Transform.create(this.topText, {
-      position: Vector3.create(0, 2.45, 0.45),
+      position: Vector3.create(0, 2.45, 0.85),
       scale: Vector3.create(0.4, 0.4, 0.4),
       rotation: Quaternion.fromEulerDegrees(0, 0, 0)
     })
@@ -405,6 +406,7 @@ export class HorizontalScrollMenu {
   }
 
   removeMenuItem(index: number): void {
+    console.log('item removed', index)
     if (index > -1) {
       // engine.removeEntity(this.items[index])
       if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
@@ -420,61 +422,45 @@ export class HorizontalScrollMenu {
   }
 
   scrollUp(): void {
-    const scrollInfo = HorizontalScroller.get(this.scrollerRootA)
-    // scrollable
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+
     if (scrollInfo.currentItem < scrollInfo.stops - 1) {
-      scrollUp(this.scrollerRootA)
+      scrollInfo.currentItem += 1
+
+      // CENTRAMOS correctamente
+      scrollInfo.scrollTarget = -scrollInfo.currentItem * this.spacing
+
       this.deselectAll()
-
-      // show new topmost item
       this.showItem(scrollInfo.currentItem + (this.visibleItemCount - 1))
-
-      // hide bottom item
       this.hideItem(scrollInfo.currentItem - 2)
-
-      // make the second item from the bottom smaller (avoid clipping through base)
       this.halveSizeItem(scrollInfo.currentItem - 1)
-
-      // make second item from the bottom full size
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount - 2)
-
       this.halveSizeAllExcept(scrollInfo.currentItem)
-      // this.rotateAll(scrollInfo.currentItem)
+
       AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
-    }
-    // reached the end
-    else {
-      Transform.getMutable(this.scrollerRootA).position.x -= 0.3
+    } else {
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
   }
 
   scrollDown(): void {
-    const scrollInfo = HorizontalScroller.get(this.scrollerRootA)
-    // scrollable
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+
     if (scrollInfo.currentItem > 0) {
-      scrollDown(this.scrollerRootA)
+      scrollInfo.currentItem -= 1
+
+      // CENTRAMOS correctamente
+      scrollInfo.scrollTarget = -scrollInfo.currentItem * this.spacing
+
       this.deselectAll()
-
-      // show new bottom item
       this.showItem(scrollInfo.currentItem - 1)
-
-      // hide topmost item
       this.hideItem(scrollInfo.currentItem + this.visibleItemCount)
-
-      // make the second item from the bottom smaller (avoid clipping through base)
       this.halveSizeItem(scrollInfo.currentItem + this.visibleItemCount - 1)
-      // make second item from the bottom full size
       this.fullSizeItem(scrollInfo.currentItem)
-
       this.halveSizeAllExcept(scrollInfo.currentItem)
-      // this.rotateAll(scrollInfo.currentItem)
 
       AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
-    }
-    // reached the end
-    else {
-      Transform.getMutable(this.scrollerRootA).position.x += 0.3
+    } else {
       AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
     }
   }
@@ -551,24 +537,33 @@ export class HorizontalScrollMenu {
   }
 
   hideItem(_id: number): void {
-    if (_id < this.items.length && _id >= 0) {
-      if (engine.getEntityState(this.itemRoots[_id]) === 1) engine.removeEntity(this.itemRoots[_id])
+    if (_id < this.itemRoots.length && _id >= 0) {
+      if (Transform.has(this.itemRoots[_id])) {
+        Transform.getMutable(this.itemRoots[_id]).parent = undefined
+      }
     }
   }
 
   showItem(_id: number): void {
     if (_id < this.itemRoots.length && _id >= 0) {
-      Transform.getMutable(this.itemRoots[_id]).parent = this.scrollerRootA
-      Transform.getMutable(this.items[_id].entity).parent = this.itemRoots[_id]
-      this.itemRoots[_id] = engine.addEntity()
-      // this.items[_id].getComponent(Transform).scale.setAll(0)
-      Transform.getMutable(this.items[_id].entity).position.z = -0.0
+      const root = this.itemRoots[_id]
+
+      if (!Transform.has(root)) {
+        Transform.create(root, {
+          position: Vector3.create(this.spacing * _id, 0, 0)
+        })
+      }
+
+      const item = this.items[_id].entity
+      Transform.getMutable(root).parent = this.scrollerRootA
+      Transform.getMutable(item).parent = root
+      Transform.getMutable(item).position.z = -0.0
     }
   }
 
   halveSizeItem(_id: number): void {
     if (_id < this.items.length && _id >= 0) {
-      if (engine.getEntityState(this.itemRoots[_id]) === 1) {
+      if (AnimatedItem.getOrNull(this.items[_id].entity) !== null) {
         const originalTransform = AnimatedItem.getMutable(this.items[_id].entity)
         originalTransform.defaultTransform_scale.x = this.items[_id].defaultItemScale.x * 0.25
         originalTransform.defaultTransform_scale.y = this.items[_id].defaultItemScale.y * 0.25
@@ -598,10 +593,12 @@ export class HorizontalScrollMenu {
 
   resetScroll(): void {
     this.deselectAll()
-    reset(this.scrollerRootA)
-    // this.scrollerRootA.getComponent(VerticalScroller).base = 0
-    HorizontalScroller.getMutable(this.scrollerRootA).scrollStep = this.spacing
-    HorizontalScroller.getMutable(this.scrollerRootA).stops = this.items.length
+
+    const scrollInfo = HorizontalScroller.getMutable(this.scrollerRootA)
+    scrollInfo.currentItem = 0
+    scrollInfo.scrollTarget = 0
+    scrollInfo.scrollStep = this.spacing
+    scrollInfo.stops = this.items.length
 
     for (let i = 0; i < this.items.length; i++) {
       if (i < this.visibleItemCount) {
@@ -609,17 +606,18 @@ export class HorizontalScrollMenu {
       } else {
         this.hideItem(i)
       }
-      // reset menu item scaling
+
       Vector3.copyFrom(
         this.items[i].defaultItemScale,
         AnimatedItem.getMutable(this.items[i].entity).defaultTransform_scale
       )
     }
+
     Transform.getMutable(this.scrollerRootA).position.x = 0
   }
 
   updateTitle(_title: string): void {
-    this.topTextShape.text = wordWrap(_title, 40, 2)
+    TextShape.getMutable(this.topText).text = wordWrap(_title, 40, 2)
   }
 }
 
