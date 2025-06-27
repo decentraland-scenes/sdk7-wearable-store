@@ -7,10 +7,8 @@ import { collectionPlaceholder, wearableItemPlaceholder } from './menuPlaceholde
 import { VerticalScrollMenu } from './verticalScrollMenu'
 import { menuTopEventsShape, roundedSquareAlpha, wardrobeShape } from './resources/resources'
 import { createMANAComponent } from '../blockchain/mana'
-import * as f from '../blockchain/fetch'
-import { getPlayer } from '@dcl/sdk/src/players'
-
-const STORE_CONTRACT_ADDRESS = '0xf64Dc33a192e056bb5f0e5049356a0498B502D50'
+import * as f from '../blockchain/fetchWearablesAdapter'
+// import { getPlayer } from '@dcl/sdk/src/players'
 
 export type Collection = {
   id: string
@@ -196,30 +194,34 @@ export async function updateCollectionsMenu(
 ): Promise<void> {
   console.log(collectionsList)
   const mana = createMANAComponent()
-  let collections: f.Collections = []
-  if (collectionsList != null) {
-    for (const collectionURN of collectionsList) {
-      const collection = await f.collection(collectionURN)
-      if (collection !== undefined) collections.push(collection as unknown as f.Collection)
-    }
-  } else {
-    collections = await f.storeCollections().then((r) => r.collections)
-  }
-  const fromAddress = getPlayer()
+  console.log(mana)
+  const collections: Collection[] = []
 
-  const allowance = await mana.allowance(fromAddress?.userId, STORE_CONTRACT_ADDRESS)
-  const minimumRequired = 500n * 10n ** 18n
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  if (BigInt(allowance) < minimumRequired) {
-    console.log('Approving MANA to CollectionStore...')
-    try {
-      await mana.approve(STORE_CONTRACT_ADDRESS, minimumRequired.toString())
-      console.log('MANA approved.')
-    } catch (e) {
-      console.log('MANA approval failed', e)
+  if (collectionsList != null && collectionsList.length > 0) {
+    const collectionNames = await f.getCollectionNamesFromServer(collectionsList)
+
+    for (let i = 0; i < collectionsList.length; i++) {
+      const urn = collectionsList[i]
+      const name = collectionNames[i] ?? urn
+      const collection = await f.buildCollectionObject(urn, name)
+      collections.push(collection)
     }
   }
-  console.log(collections)
+  // const fromAddress = getPlayer()
+
+  // const allowance = await mana.allowance(fromAddress?.userId, STORE_CONTRACT_ADDRESS)
+  // const minimumRequired = 500n * 10n ** 18n
+  // // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  // if (BigInt(allowance) < minimumRequired) {
+  //   console.log('Approving MANA to CollectionStore...')
+  //   try {
+  //     await mana.approve(STORE_CONTRACT_ADDRESS, minimumRequired.toString())
+  //     console.log('MANA approved.')
+  //   } catch (e) {
+  //     console.log('MANA approval failed', e)
+  //   }
+  // }
+  console.log(collections, 'Everything to display')
   let itemCount = 0
   console.log('number of Collections: ' + collections.length)
   for (const collection of collections) {
