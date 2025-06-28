@@ -409,7 +409,10 @@ export class HorizontalScrollMenu {
     console.log('item removed', index)
     if (index > -1) {
       // engine.removeEntity(this.items[index])
-      if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
+      if (Transform.has(this.itemRoots[index])) {
+        Transform.getMutable(this.itemRoots[index]).parent = undefined
+      }
+      // if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
       // engine.removeEntity(this.clickBoxes[index])
 
       this.items.splice(index, 1)

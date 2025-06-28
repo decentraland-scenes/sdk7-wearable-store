@@ -108,7 +108,7 @@ export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: an
   }
 
   if (_collection.items.length < _menu.items.length) {
-    // removeLastXItems(_menu, _menu.items.length - _collection.items.length)
+    removeLastXItems(_menu, _menu.items.length - _collection.items.length)
   }
 
   _menu.resetScroll()
