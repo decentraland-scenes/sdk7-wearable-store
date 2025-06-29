@@ -18,10 +18,15 @@ import {
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { type MenuItem } from './menuItem'
 import {
+  menuDeselectClip,
   menuDeselectSource,
+  menuDownClip,
   menuDownSource,
+  menuScrollEndClip,
   menuScrollEndSource,
+  menuSelectClip,
   menuSelectSource,
+  menuUpClip,
   menuUpSource
 } from './resources/sounds'
 import { hangerShape, scrollInstructionShape } from './resources/resources'
@@ -133,7 +138,10 @@ export class HorizontalScrollMenu {
     GltfContainer.create(this.topMesh, { src: _topMesh })
     Transform.getMutable(this.topMesh).parent = this.entity
 
-    AudioSource.create(this.entity, AudioSource.get(menuUpSource))
+    AudioSource.create(this.entity, {
+      audioClipUrl: menuUpClip,
+      volume: 1
+    })
 
     Transform.create(this.entity, _transform)
 
@@ -174,7 +182,10 @@ export class HorizontalScrollMenu {
     })
     Transform.getMutable(this.baseMesh).parent = this.entity
 
-    AudioSource.create(this.baseMesh, AudioSource.get(menuDownSource))
+    AudioSource.create(this.baseMesh, {
+      audioClipUrl: menuDownClip,
+      volume: 1
+    })
 
     this.topText = engine.addEntity()
     this.topTextShape = TextShape.create(this.topText)
@@ -266,17 +277,26 @@ export class HorizontalScrollMenu {
     // sounds
     this.selectSound = engine.addEntity()
     Transform.create(this.selectSound)
-    AudioSource.create(this.selectSound, AudioSource.get(menuSelectSource))
+    AudioSource.create(this.selectSound, {
+      audioClipUrl: menuSelectClip,
+      volume: 1
+    })
     Transform.getMutable(this.selectSound).parent = this.entity
 
     this.deselectSound = engine.addEntity()
     Transform.create(this.deselectSound)
-    AudioSource.create(this.deselectSound, AudioSource.get(menuDeselectSource))
+    AudioSource.create(this.deselectSound, {
+      audioClipUrl: menuDeselectClip,
+      volume: 1
+    })
     Transform.getMutable(this.deselectSound).parent = this.entity
 
     this.scrollEndSound = engine.addEntity()
     Transform.create(this.scrollEndSound)
-    AudioSource.create(this.scrollEndSound, AudioSource.get(menuScrollEndSource))
+    AudioSource.create(this.scrollEndSound, {
+      audioClipUrl: menuScrollEndClip,
+      volume: 1
+    })
     Transform.getMutable(this.scrollEndSound).parent = this.entity
   }
 
@@ -352,7 +372,7 @@ export class HorizontalScrollMenu {
               }
             }
           ]
-          AudioSource.playSound(menuSelectSource, AudioSource.get(menuSelectSource).audioClipUrl)
+          AudioSource.playSound(menuSelectSource, menuSelectClip)
         } else {
           this.deselectItem(_item, false)
           PointerEvents.getMutable(clickBox).pointerEvents = [
@@ -380,7 +400,7 @@ export class HorizontalScrollMenu {
               }
             }
           ]
-          AudioSource.playSound(menuDeselectSource, AudioSource.get(menuDeselectSource).audioClipUrl)
+          AudioSource.playSound(menuDeselectSource, menuDeselectClip)
         }
       }
       if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN, clickBox)) {
@@ -440,9 +460,9 @@ export class HorizontalScrollMenu {
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount - 2)
       this.halveSizeAllExcept(scrollInfo.currentItem)
 
-      AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
+      AudioSource.playSound(menuUpSource, menuUpClip)
     } else {
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 
@@ -462,9 +482,9 @@ export class HorizontalScrollMenu {
       this.fullSizeItem(scrollInfo.currentItem)
       this.halveSizeAllExcept(scrollInfo.currentItem)
 
-      AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
+      AudioSource.playSound(menuDownSource, menuDownClip)
     } else {
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 

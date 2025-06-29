@@ -1,48 +1,43 @@
 import { AudioSource, engine } from '@dcl/sdk/ecs'
 
-const lobbyMusicClip = 'sounds/lobby_music.mp3'
-export const lobbyMusicSource = engine.addEntity()
-AudioSource.create(lobbyMusicSource, {
-  audioClipUrl: lobbyMusicClip,
-  volume: 1
-})
+export const lobbyMusicClip = 'sounds/lobby_music.mp3'
 
-const lobbyAmbienceClip = 'sounds/lobby_ambience.mp3'
+export const lobbyAmbienceClip = 'sounds/lobby_ambience.mp3'
 export const lobbyAmbienceSource = engine.addEntity()
 AudioSource.create(lobbyAmbienceSource, {
   audioClipUrl: lobbyAmbienceClip,
   volume: 1
 })
 
-const menuUpClip = 'sounds/menu_woosh_up.mp3'
+export const menuUpClip = 'sounds/menu_woosh_up.mp3'
 export const menuUpSource = engine.addEntity()
 AudioSource.create(menuUpSource, {
   audioClipUrl: menuUpClip,
   volume: 1
 })
 
-const menuDownClip = 'sounds/menu_woosh.mp3'
+export const menuDownClip = 'sounds/menu_woosh.mp3'
 export const menuDownSource = engine.addEntity()
 AudioSource.create(menuDownSource, {
   audioClipUrl: menuDownClip,
   volume: 1
 })
 
-const menuScrollEndClip = 'sounds/menu_scroll_end.mp3'
+export const menuScrollEndClip = 'sounds/menu_scroll_end.mp3'
 export const menuScrollEndSource = engine.addEntity()
 AudioSource.create(menuScrollEndSource, {
   audioClipUrl: menuScrollEndClip,
   volume: 1
 })
 
-const menuSelectClip = 'sounds/menu_select.mp3'
+export const menuSelectClip = 'sounds/menu_select.mp3'
 export const menuSelectSource = engine.addEntity()
 AudioSource.create(menuSelectSource, {
   audioClipUrl: menuSelectClip,
   volume: 1
 })
 
-const menuDeselectClip = 'sounds/menu_deselect.mp3'
+export const menuDeselectClip = 'sounds/menu_deselect.mp3'
 export const menuDeselectSource = engine.addEntity()
 AudioSource.create(menuDeselectSource, {
   audioClipUrl: menuDeselectClip,
