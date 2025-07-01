@@ -107,7 +107,7 @@ export class WearableMenuItem extends MenuItem {
     })
     Transform.getMutable(this.itemCard).parent = this.entity
     // this.itemCard.addComponent(resource.detailsCardShape)
-    console.log('item image',_item.image)
+    console.log('item image', _item.image)
 
     this.thumbNail = new ThumbnailPlane(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -288,7 +288,7 @@ export class WearableMenuItem extends MenuItem {
     })
 
     this.availableText = TextShape.create(this.availableCounter)
-    this.availableText.text = _item.available + "/" + _item.maxSupply;
+    this.availableText.text = _item.available + '/' + _item.maxSupply
 
     this.availableText.textColor = textColor1
     this.availableText.fontSize = detailFontSize
@@ -335,7 +335,6 @@ export class WearableMenuItem extends MenuItem {
     this.buyButtonTextRoot = engine.addEntity()
     this.buyButtonText = TextShape.create(this.buyButtonTextRoot)
 
-    
     TextShape.getMutable(this.buyButtonTextRoot).textColor = Color4.fromHexString('#FFFFFF')
     TextShape.getMutable(this.buyButtonTextRoot).font = Font.F_SANS_SERIF
     TextShape.getMutable(this.buyButtonTextRoot).textAlign = TextAlignMode.TAM_MIDDLE_CENTER
@@ -412,25 +411,25 @@ export class WearableMenuItem extends MenuItem {
   }
 
   updateItemInfo(_collection: any, _item: any): void {
+
     // image
     if (_item.image === 'images/dummy_scene.png') {
       this.thumbNail.updateImage(_item.image)
     } else {
       // this.thumbNail.updateImage(new Texture(fixImageUrl(_item.image)))
-      console.log('itemmmm image',_item.image)
+      console.log('itemmmm image', _item.image)
       this.thumbNail.updateImage(_item.image)
     }
 
     // price
     if (_item.available > 1) {
-       
       if (ethClean(_item.price) === '0') TextShape.getMutable(this.priceTextRoot).text = 'Free'
       else TextShape.getMutable(this.priceTextRoot).text = ethClean(_item.price) + ' MANA'
     } else {
       TextShape.getMutable(this.priceTextRoot).text = 'Out of stock'
     }
     // rarity
-    TextShape.getMutable(this.rarityTextRoot).text = _item.rarity;
+    TextShape.getMutable(this.rarityTextRoot).text = _item.rarity
     switch (_item.rarity) {
       case 'common': {
         GltfContainer.createOrReplace(this.rarityBG, { src: resource.commonBGShape })
@@ -470,7 +469,7 @@ export class WearableMenuItem extends MenuItem {
     }
 
     // available
-    TextShape.getMutable(this.availableCounter).text = _item.available + "/" + _item.maxSupply;
+    TextShape.getMutable(this.availableCounter).text = _item.available + '/' + _item.maxSupply
 
     // update buy button
     this.buyButtonText.text = 'BUY'

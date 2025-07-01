@@ -18,10 +18,15 @@ import {
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { type MenuItem } from './menuItem'
 import {
+  menuDeselectClip,
   menuDeselectSource,
+  menuDownClip,
   menuDownSource,
+  menuScrollEndClip,
   menuScrollEndSource,
+  menuSelectClip,
   menuSelectSource,
+  menuUpClip,
   menuUpSource
 } from './resources/sounds'
 import { hangerShape, scrollInstructionShape } from './resources/resources'
@@ -133,7 +138,10 @@ export class HorizontalScrollMenu {
     GltfContainer.create(this.topMesh, { src: _topMesh })
     Transform.getMutable(this.topMesh).parent = this.entity
 
-    AudioSource.create(this.entity, AudioSource.get(menuUpSource))
+    AudioSource.create(this.entity, {
+      audioClipUrl: menuUpClip,
+      volume: 1
+    })
 
     Transform.create(this.entity, _transform)
 
@@ -174,7 +182,10 @@ export class HorizontalScrollMenu {
     })
     Transform.getMutable(this.baseMesh).parent = this.entity
 
-    AudioSource.create(this.baseMesh, AudioSource.get(menuDownSource))
+    AudioSource.create(this.baseMesh, {
+      audioClipUrl: menuDownClip,
+      volume: 1
+    })
 
     this.topText = engine.addEntity()
     this.topTextShape = TextShape.create(this.topText)
@@ -266,17 +277,26 @@ export class HorizontalScrollMenu {
     // sounds
     this.selectSound = engine.addEntity()
     Transform.create(this.selectSound)
-    AudioSource.create(this.selectSound, AudioSource.get(menuSelectSource))
+    AudioSource.create(this.selectSound, {
+      audioClipUrl: menuSelectClip,
+      volume: 1
+    })
     Transform.getMutable(this.selectSound).parent = this.entity
 
     this.deselectSound = engine.addEntity()
     Transform.create(this.deselectSound)
-    AudioSource.create(this.deselectSound, AudioSource.get(menuDeselectSource))
+    AudioSource.create(this.deselectSound, {
+      audioClipUrl: menuDeselectClip,
+      volume: 1
+    })
     Transform.getMutable(this.deselectSound).parent = this.entity
 
     this.scrollEndSound = engine.addEntity()
     Transform.create(this.scrollEndSound)
-    AudioSource.create(this.scrollEndSound, AudioSource.get(menuScrollEndSource))
+    AudioSource.create(this.scrollEndSound, {
+      audioClipUrl: menuScrollEndClip,
+      volume: 1
+    })
     Transform.getMutable(this.scrollEndSound).parent = this.entity
   }
 
@@ -352,7 +372,7 @@ export class HorizontalScrollMenu {
               }
             }
           ]
-          AudioSource.playSound(menuSelectSource, AudioSource.get(menuSelectSource).audioClipUrl)
+          AudioSource.playSound(menuSelectSource, menuSelectClip)
         } else {
           this.deselectItem(_item, false)
           PointerEvents.getMutable(clickBox).pointerEvents = [
@@ -380,7 +400,7 @@ export class HorizontalScrollMenu {
               }
             }
           ]
-          AudioSource.playSound(menuDeselectSource, AudioSource.get(menuDeselectSource).audioClipUrl)
+          AudioSource.playSound(menuDeselectSource, menuDeselectClip)
         }
       }
       if (inputSystem.isTriggered(InputAction.IA_PRIMARY, PointerEventType.PET_DOWN, clickBox)) {
@@ -409,7 +429,10 @@ export class HorizontalScrollMenu {
     console.log('item removed', index)
     if (index > -1) {
       // engine.removeEntity(this.items[index])
-      if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
+      if (Transform.has(this.itemRoots[index])) {
+        Transform.getMutable(this.itemRoots[index]).parent = undefined
+      }
+      // if (engine.getEntityState(this.itemRoots[index]) === 1) engine.removeEntity(this.itemRoots[index])
       // engine.removeEntity(this.clickBoxes[index])
 
       this.items.splice(index, 1)
@@ -436,10 +459,9 @@ export class HorizontalScrollMenu {
       this.halveSizeItem(scrollInfo.currentItem - 1)
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount - 2)
       this.halveSizeAllExcept(scrollInfo.currentItem)
-
-      AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
+      AudioSource.playSound(menuUpSource, menuUpClip)
     } else {
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 
@@ -459,9 +481,9 @@ export class HorizontalScrollMenu {
       this.fullSizeItem(scrollInfo.currentItem)
       this.halveSizeAllExcept(scrollInfo.currentItem)
 
-      AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
+      AudioSource.playSound(menuDownSource, menuDownClip)
     } else {
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 
@@ -600,20 +622,25 @@ export class HorizontalScrollMenu {
     scrollInfo.scrollStep = this.spacing
     scrollInfo.stops = this.items.length
 
-    for (let i = 0; i < this.items.length; i++) {
-      if (i < this.visibleItemCount) {
-        this.showItem(i)
-      } else {
-        this.hideItem(i)
-      }
+for (let i = 0; i < this.items.length; i++) {
+  if (Transform.has(this.items[i].entity)) {
+    const t = Transform.getMutable(this.items[i].entity)
+    t.position = Vector3.create(0, 0, 0)
+    t.rotation = Quaternion.fromEulerDegrees(0, 0, 0)
+    t.scale = Vector3.create(1, 1, 1)
+  }
 
-      Vector3.copyFrom(
-        this.items[i].defaultItemScale,
-        AnimatedItem.getMutable(this.items[i].entity).defaultTransform_scale
-      )
-    }
+  if (AnimatedItem.getOrNull(this.items[i].entity) != null) {
+    const anim = AnimatedItem.getMutable(this.items[i].entity)
+    Vector3.copyFrom(this.items[i].defaultItemScale, anim.defaultTransform_scale)
+    anim.isHighlighted = false
+  }
+}
+
 
     Transform.getMutable(this.scrollerRootA).position.x = 0
+
+
   }
 
   updateTitle(_title: string): void {
@@ -639,7 +666,7 @@ function clickScrollSystem(dt: number): void {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function springPos(a_Target: number, a_Current: number, a_currentVelocity: number, a_TimeStep: number): number {
   const currentToTarget = a_Target - a_Current
-  const springForce = currentToTarget * 150
+  const springForce = currentToTarget * 300
   // let dampingForce = -this.currentVelocity * 2 * Math.sqrt( SPRING_CONSTANT );
   const dampingForce = -a_currentVelocity * 2
   const force = springForce + dampingForce

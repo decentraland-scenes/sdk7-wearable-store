@@ -15,10 +15,13 @@ import {
 import { type MenuItem } from './menuItem'
 import { Vector3, Quaternion } from '@dcl/sdk/math'
 import {
-  menuDeselectSource,
+  menuDeselectClip,
+  menuDownClip,
   menuDownSource,
+  menuScrollEndClip,
   menuScrollEndSource,
-  menuSelectSource,
+  menuSelectClip,
+  menuUpClip,
   menuUpSource
 } from './resources/sounds'
 import { cardClickableShape, collectionMenuShape, scrollInstructionShape } from './resources/resources'
@@ -97,7 +100,10 @@ export class VerticalScrollMenu {
     this.clickBoxes = []
     this.itemRoots = []
 
-    AudioSource.create(this.entity, AudioSource.get(menuUpSource))
+    AudioSource.create(this.entity, {
+      audioClipUrl: menuUpClip,
+      volume: 1
+    })
     Transform.create(this.entity)
 
     this.origin = Vector3.create(0, 0, 0)
@@ -197,17 +203,26 @@ export class VerticalScrollMenu {
     // sounds
     this.selectSound = engine.addEntity()
     Transform.create(this.selectSound)
-    AudioSource.create(this.selectSound, AudioSource.get(menuSelectSource))
+    AudioSource.create(this.selectSound, {
+      audioClipUrl: menuUpClip,
+      volume: 1
+    })
     Transform.getMutable(this.selectSound).parent = this.entity
 
     this.deselectSound = engine.addEntity()
     Transform.create(this.deselectSound)
-    AudioSource.create(this.deselectSound, AudioSource.get(menuDeselectSource))
+    AudioSource.create(this.deselectSound, {
+      audioClipUrl: menuDeselectClip,
+      volume: 1
+    })
     Transform.getMutable(this.deselectSound).parent = this.entity
 
     this.scrollEndSound = engine.addEntity()
     Transform.create(this.scrollEndSound)
-    AudioSource.create(this.scrollEndSound, AudioSource.get(menuScrollEndSource))
+    AudioSource.create(this.scrollEndSound, {
+      audioClipUrl: menuScrollEndClip,
+      volume: 1
+    })
     Transform.getMutable(this.scrollEndSound).parent = this.entity
   }
 
@@ -261,7 +276,7 @@ export class VerticalScrollMenu {
         if (!_item.selected) {
           this.selectItem(_item)
           // clickBox.getComponent(OnPointerDown).hoverText = "DESELECT"
-          AudioSource.playSound(this.selectSound, AudioSource.get(menuSelectSource).audioClipUrl)
+          AudioSource.playSound(this.selectSound, menuSelectClip)
         }
         // else{
         //     this.deselectItem(_item, false)
@@ -315,12 +330,12 @@ export class VerticalScrollMenu {
       // make second item from the bottom full size
       this.halveSizeItem(scrollInfo.currentItem + this.visibleItemCount)
 
-      AudioSource.playSound(menuUpSource, AudioSource.get(menuUpSource).audioClipUrl)
+      AudioSource.playSound(menuUpSource, menuUpClip)
     }
     // reached the end
     else {
       Transform.getMutable(this.scrollerRootA).position.y -= this.verticalSpacing * 0.2
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 
@@ -346,12 +361,12 @@ export class VerticalScrollMenu {
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount)
 
       scrollDown(this.scrollerRootA)
-      AudioSource.playSound(menuDownSource, AudioSource.get(menuDownSource).audioClipUrl)
+      AudioSource.playSound(menuDownSource, menuDownClip)
     }
     // reached the end
     else {
       Transform.getMutable(this.scrollerRootA).position.y += this.verticalSpacing * 0.2
-      AudioSource.playSound(menuScrollEndSource, AudioSource.get(menuScrollEndSource).audioClipUrl)
+      AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
     }
   }
 
