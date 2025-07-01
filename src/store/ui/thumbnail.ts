@@ -1,4 +1,4 @@
-import { engine, Material, MeshRenderer, Transform, type TransformType } from '@dcl/sdk/ecs'
+import { engine, Material, MaterialTransparencyMode, MeshRenderer, Transform, type TransformType } from '@dcl/sdk/ecs'
 import { Quaternion, Vector3 } from '@dcl/sdk/math'
 
 export class ThumbnailPlane {
@@ -25,22 +25,22 @@ export class ThumbnailPlane {
       }),
       specularIntensity: 0,
       metallic: 0,
-      roughness: 1
+      roughness: 1,
+      transparencyMode: MaterialTransparencyMode.MTM_ALPHA_BLEND,
     })
     Transform.create(this.entity, {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       position: _transform.position || Vector3.Zero(),
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       scale: _transform.scale || Vector3.One(),
-      rotation: Quaternion.fromEulerDegrees(0, 0, 90)
+      rotation: Quaternion.fromEulerDegrees(180, 0, 90)
     })
 
     // engine.addEntity(this)
   }
 
   updateImage(texture: string): void {
-    // const baseUrl = 'https://peer.decentraland.org/content/contents/'
-    const imageUrl =   texture
+    const imageUrl = texture
     Material.deleteFrom(this.entity)
     Material.setPbrMaterial(this.entity, {
       texture: Material.Texture.Common({
@@ -49,9 +49,10 @@ export class ThumbnailPlane {
       alphaTexture: Material.Texture.Common({
         src: this.alphaImage
       }),
+      transparencyMode: MaterialTransparencyMode.MTM_ALPHA_BLEND,
       specularIntensity: 0,
       metallic: 0,
-      roughness: 1 
+      roughness: 1
     })
   }
 }

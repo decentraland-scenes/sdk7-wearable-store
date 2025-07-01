@@ -79,41 +79,32 @@ export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: an
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   _menu.updateTitle(_collection.name)
 
+  // 1️⃣ Primero quitamos todos los ítems viejos
+  while (_menu.items.length > 0) {
+    _menu.removeMenuItem(_menu.items.length - 1)
+  }
+
+  // 2️⃣ Ahora agregamos todos nuevos
   for (let i = 0; i < _collection.items.length; i++) {
-    // only show wearables wich have purchasable copies left
-    // if (_collection.items[i].available > 0) {
-
-    // while there are still existing cards left in the menu (from previous collection) update those
-    if (i < _menu.items.length) {
-      _menu.items[i].updateItemInfo(_collection, _collection.items[i])
-    }
-    // otherwise add new cards to the menu
-    else {
-      // console.log("adding: " + _collection.items[i].metadata.wearable.name);
-      _menu.addMenuItem(
-        new WearableMenuItem(
-          {
-            position: Vector3.create(0, 0, 0),
-            scale: Vector3.create(1, 1, 1),
-            rotation: Quaternion.fromEulerDegrees(0, 0, 0)
-          },
-          roundedSquareAlpha,
-          _collection,
-          _collection.items[i] 
-        )
+    _menu.addMenuItem(
+      new WearableMenuItem(
+        {
+          position: Vector3.create(0, 0, 0),
+          scale: Vector3.create(1, 1, 1),
+          rotation: Quaternion.fromEulerDegrees(0, 0, 0)
+        },
+        roundedSquareAlpha,
+        _collection,
+        _collection.items[i]
       )
-    }
-
-    // }
+    )
   }
 
-  if (_collection.items.length < _menu.items.length) {
-    removeLastXItems(_menu, _menu.items.length - _collection.items.length)
-  }
-
+  // 3️⃣ Finalmente reseteamos scroll y tamaño
   _menu.resetScroll()
   _menu.halveSizeAllExcept(0)
 }
+
 
 // COLLECTIONS MENU
 export function createCollectionsVerticalMenu(
