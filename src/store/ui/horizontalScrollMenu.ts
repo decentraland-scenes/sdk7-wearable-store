@@ -459,7 +459,6 @@ export class HorizontalScrollMenu {
       this.halveSizeItem(scrollInfo.currentItem - 1)
       this.fullSizeItem(scrollInfo.currentItem + this.visibleItemCount - 2)
       this.halveSizeAllExcept(scrollInfo.currentItem)
-
       AudioSource.playSound(menuUpSource, menuUpClip)
     } else {
       AudioSource.playSound(menuScrollEndSource, menuScrollEndClip)
@@ -662,7 +661,7 @@ function clickScrollSystem(dt: number): void {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function springPos(a_Target: number, a_Current: number, a_currentVelocity: number, a_TimeStep: number): number {
   const currentToTarget = a_Target - a_Current
-  const springForce = currentToTarget * 150
+  const springForce = currentToTarget * 300
   // let dampingForce = -this.currentVelocity * 2 * Math.sqrt( SPRING_CONSTANT );
   const dampingForce = -a_currentVelocity * 2
   const force = springForce + dampingForce
