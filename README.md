@@ -1,265 +1,94 @@
-# SDK7 Template scene
+# Flat Screen TV version of the Decentraland Wearable Store (SDK7-ready)
+by DOCTORdripp
+
+This 1-tier flat screen revision can be repurposed onto any flat surface. Optionally replace `models/menu/wardrobe.glb` with your custom model (or an empty model) if you wish to position a flat store on a wall.
+
+---
+
+## Wearables Store
+
+This store allows you to browse and purchase wearables on the Polygon L2 network from inside Decentraland’s **new explorer** (web / desktop / VR).
+
+By default, it displays **all wearables on sale in L2**. You can also configure it to show only specific collections, for example to create a private store with just your wearables.
+
+![Screenshot](screenshot/screenshot.png)
+
+---
 
 ## Try it out
 
-**Previewing the scene**
+Make sure you have the [Decentraland Explorer](https://decentraland.org/download/) installed, or use the [Web version](https://play.decentraland.org/).
 
-1. Download this repository.
+**Previewing the scene locally (SDK7):**
 
-2. Install the [Decentraland Editor](https://docs.decentraland.org/creator/development-guide/sdk7/editor/)
+1. Download this repository and open the project folder in your terminal.
+2. Install dependencies (only once):
 
-3. Open a Visual Studio Code window on this scene's root folder. Not on the root folder of the whole repo, but instead on this sub-folder that belongs to the scene.
+   ```bash
+   npm install
+   ```
 
-4. Open the Decentraland Editor tab, and press **Run Scene**
+3. Start the preview in the new explorer:
 
-Alternatively, you can use the command line. Inside this scene root directory run:
+   ```bash
+   npm run start-new-explorer
+   ```
 
-```
-npm run start
-```
+The CLI will compile your scene and launch it in the new Decentraland explorer for local testing.
 
-## What's new on SDK 7
+> **Note:** To test purchasing functionality, make sure you have a Web3 browser extension (like MetaMask) installed and connected.
 
-Below are some basic concepts about the SDK 7 syntax. For more details, see the [Documentation site](https://docs.decentraland.org/creator/).
+Learn more about building scenes in the [Decentraland Docs](https://docs.decentraland.org/creator/development-guide/sdk7/introduction/).
 
-### Entities
+If something doesn’t work, please [file an issue](https://github.com/decentraland-scenes/Awesome-Repository/issues/new).
 
-An Entity is just an ID. It is an abstract concept not represented by any data structure. There is no "class Entity". Just a number that is used as a reference to group different components.
+---
 
-```ts
-const myEntity = engine.addEntity()
-console.console.log(myEntity) // 100
+## Scene usage
 
-// Remove Entity
-engine.removeEntity(myEntity)
-```
+- Click the menu on the right to browse different collections.
+- When a collection is selected, use your mouse or controller to scroll through the items.
+- Click on an item to see more details.
 
-> Note: Note that it's no longer necessary to separately create an entity and then add it to the engine, this is all done in a single act.
+To buy an item, click the **Buy** button. Make sure you’re connected with a Web3 wallet and have MANA on Polygon.
 
-### Components
+On your first transaction, you’ll be asked to **approve** the contract to spend your Polygon MANA. This approval is free of charge (it runs on Polygon).
 
-The component is just a data container, WITHOUT any functions.
+After that, purchases require **no gas fees**—just the MANA cost of the item. Confirm the purchase by signing the transaction in your wallet.
 
-To add a component to an entity, the entry point is now the component type, not the entity.
+---
 
-```ts
-Transform.create(myEntity, <params>)
-```
+## Customize
 
-This is different from how the syntax was in SDK6:
-
-```ts
-// OLD Syntax
-myEntity.addComponent(Transform)
-```
-
-#### Base Components
-
-Base components already come packed as part of the SDK. Most of them interact directly with the renderer in some way. This is the full list of currently supported base components:
-
-- Transform
-- Animator
-- Material
-- MeshRenderer
-- MeshCollider
-- AudioSource
-- AudioStream
-- AvatarAttach
-- AvatarModifierArea
-- AvatarShape
-- Billboard
-- CameraMode
-- CameraModeArea
-- GltfContainer
-- NftShape
-- PointerEventsResult
-- PointerHoverFeedback
-- PointerLock
-- Raycast
-- RaycastResult
-- TextShape
-- VisibilityComponent
+In `src/index.ts`, you'll find an example of creating a store with custom collections:
 
 ```ts
-const entity = engine.addEntity()
-Transfrom.create(entity, {
-  position: Vector3.create(12, 1, 12)
-  scale: Vector3.One(),
-  rotation: Quaternion.Identity()
-})
-GltfContainer.create(zombie, {
-  withCollisions: true,
-  isPointerBlocker: true,
-  visible: true,
-  src: 'models/zombie.glb'
-})
+  createWearableStore(
+    {
+      position: Vector3.create(8, 0, 4),
+      scale: Vector3.create(1, 1, 1),
+      rotation: Quaternion.fromEulerDegrees(0, 90, 0)
+    },
+    [
+      'urn:decentraland:matic:collections-v2:0x02048643e32f893406dc2012a2f48a3023645612',
+      'urn:decentraland:matic:collections-v2:0x01cc9871ef405b71dd797c1423c7771942fd8258',
+      'urn:decentraland:matic:collections-v2:0x01b35f5ed8a2d01d5746ec691165eceb64517202',
+      'urn:decentraland:matic:collections-v2:0x016a61feb6377239e34425b82e5c4b367e52457f',
+      'urn:decentraland:matic:collections-v2:0x0162ba693322bcc4c9198547fe7fbb4fa751db95',
+      'urn:decentraland:matic:collections-v2:0x00ea0379451527a5cd56e2c4bb0eac950ccb79fa',
+      'urn:decentraland:matic:collections-v2:0x00c1f53e8e1b97e619bdf555fff187521b3e3e17'
+    ]
+  )
 ```
 
-#### Custom Components
+The `createWearableStore()` function takes:
 
-Each component must have a unique number ID. If a number is repeated, the engine or another player receiving updates might apply changes to the wrong component. Note that numbers 1-2000 are reserved for the base components.
+- A transform object with `position`and `rotation`. Paremeter `scale` must be 1,1,1
+- An **optional** array of collection URNs to display.  
+  - If none are provided, all Polygon L2 wearables are shown.
 
-When creating a custom component you declare the schema of the data to be stored in it. Every field in a component MUST belong to one of the built-in special schemas provided as part of the SDK. These special schemas include extra functionality that allows them to be serialized/deserialized.
+---
 
-Currently, the names of these special schemas are:
+## Copyright
 
-##### Primitives
-
-1. `Schemas.Boolean`: true or false (serialized as a Byte)
-2. `Schemas.String`: UTF8 strings (serialized length and content)
-3. `Schemas.Float`: single precission float
-4. `Schemas.Double`: double precision float
-5. `Schemas.Byte`: a single byte, integer with range 0..255
-6. `Schemas.Short`: 16 bits signed-integer with range -32768..32767
-7. `Schemas.Int`: 32 bits signed-integer with range -2³¹..(2³¹-1)
-8. `Schemas.Int64`: 64 bits signed-integer
-9. `Schemas.Number`: an alias to Schemas.Float
-
-##### Specials
-
-10. `Schemas.Entity`: a wrapper to int32 that casts the type to `Entity`
-11. `Schemas.Vector3`: a Vector3 with { x, y, z }
-12. `Schemas.Quaternion`: a Quaternion with { x, y, z, w}
-13. `Schemas.Color3`: a Color3 with { r, g, b }
-14. `Schemas.Color4`: a Colo4 with { r, g, b, a }
-
-##### Schema generator
-
-15. `Schemas.Enum`: passing the serialization Schema and the original Enum as generic
-16. `Schemas.Array`: passing the item Schema
-17. `Schemas.Map`: passing a Map with Schemas as values
-18. `Schemas.Optional`: passing the schema to serialize
-
-Below are some examples of how these schemas can be declared.
-
-```ts
-const object = Schemas.Map({ x: Schemas.Int }) // { x: 1 }
-
-const array = Schemas.Map(Schemas.Int) // [1,2,3,4]
-
-const objectArray = Schemas.Array(Schemas.Map({ x: Schemas.Int })) // [{ x: 1 }, { x: 2 }]
-
-const BasicSchemas = Schemas.Map({
-  x: Schemas.Int,
-  y: Schemas.Float,
-  text: Schemas.String,
-  flag: Schemas.Boolean
-}) // { x: 1, y: 1.412, text: 'ecs 7 text', flag: true }
-
-const VelocitySchema = Schemas.Map({
-  x: Schemas.Float,
-  y: Schemas.Float,
-  z: Schemas.Float
-})
-```
-
-To then create a custom component using one of these schemas, use the following syntax:
-
-```ts
-export const myCustomComponent = engine.defineComponent(MyDataSchema, ComponentID)
-```
-
-For contrast, below is an example of how components were constructed prior to SDK 7.
-
-```ts
-/**
- * OLD SDK
- */
-
-// Define Component
-@Component('velocity')
-export class Velocity extends Vector3 {
-  constructor(x: number, y: number, z: number) {
-    super(x, y, z)
-  }
-}
-// Create entity
-const wheel = new Entity()
-
-// Create instance of component with default values
-wheel.addComponent(new WheelSpin())
-
-/**
- * ECS 7
- */
-// Define Component
-const VelocitySchema = Schemas.Map({
-  x: Schemas.Float,
-  y: Schemas.Float,
-  z: Schemas.Float
-})
-const COMPONENT_ID = 2008
-const VelocityComponent = engine.defineComponent(Velocity, COMPONENT_ID)
-// Create Entity
-const entity = engine.addEntity()
-
-// Create instance of component
-VelocityComponent.create(entity, { x: 1, y: 2.3, z: 8 })
-
-// Remove instance of a component
-VelocityComponent.deleteFrom(entity)
-```
-
-### Systems
-
-Systems are pure & simple functions.
-All your logic comes here.
-A system might hold data which is relevant to the system itself, but no data about the entities it processes.
-
-To add a system, all you need to do is define a function and add it to the engine. The function may optionally include a `dt` parameter with the delay since last frame, just like in prior versions of the SDK.
-
-```ts
-// Basic system
-function mySystem() {
-  console.log('my system is running')
-}
-
-engine.addSystem(mySystem)
-
-// System with dt
-function mySystemDT(dt: number) {
-  console.log('time since last frame:  ', dt)
-}
-
-engine.addSystem(mySystemDT)
-```
-
-#### Query components
-
-The way to group/query the components inside systems is using the method getEntitiesWith.
-`engine.getEntitiesWith(...components)`.
-
-```ts
-function physicsSystem(dt: number) {
-  for (const [entity, transform, velocity] of engine.getEntitiesWith(Transform, Velocity)) {
-    // transform & velocity are read only components.
-    if (transform.position.x === 10) {
-      // To update a component, you need to call the `.mutable` method
-      const mutableVelocity = VelocityComponent.getMutable(entity)
-      mutableVelocity.x += 1
-    }
-  }
-}
-
-// Add system to the engine
-engine.addSystem(physicsSystem)
-
-// Remove system
-engine.removeSystem(physicsSystem)
-```
-
-### Mutability
-
-Mutability is now an important distinction. We can choose to deal with mutable or with immutable versions of a component. We should use `getMutable` only when we plan to make changes to a component. Dealing with immutable versions of components results in a huge gain in performance.
-
-The `.get()` function in a component returns an immutable version of the component. You can only read its values, but can't change any of the properties on it.
-
-```ts
-const immutableTransform = Transform.get(myEntity)
-```
-
-To fetch the mutable version of a component, call it via `ComponentDefinition.getMutable()`. For example:
-
-```ts
-const mutableTransform = Transform.getMutable(myEntity)
-```
+This scene is licensed under the standard **Apache 2.0 License**. See the terms and conditions in the [LICENSE](/LICENSE) file.
