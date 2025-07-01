@@ -622,20 +622,25 @@ export class HorizontalScrollMenu {
     scrollInfo.scrollStep = this.spacing
     scrollInfo.stops = this.items.length
 
-    for (let i = 0; i < this.items.length; i++) {
-      if (i < this.visibleItemCount) {
-        this.showItem(i)
-      } else {
-        this.hideItem(i)
-      }
+for (let i = 0; i < this.items.length; i++) {
+  if (Transform.has(this.items[i].entity)) {
+    const t = Transform.getMutable(this.items[i].entity)
+    t.position = Vector3.create(0, 0, 0)
+    t.rotation = Quaternion.fromEulerDegrees(0, 0, 0)
+    t.scale = Vector3.create(1, 1, 1)
+  }
 
-      Vector3.copyFrom(
-        this.items[i].defaultItemScale,
-        AnimatedItem.getMutable(this.items[i].entity).defaultTransform_scale
-      )
-    }
+  if (AnimatedItem.getOrNull(this.items[i].entity) != null) {
+    const anim = AnimatedItem.getMutable(this.items[i].entity)
+    Vector3.copyFrom(this.items[i].defaultItemScale, anim.defaultTransform_scale)
+    anim.isHighlighted = false
+  }
+}
+
 
     Transform.getMutable(this.scrollerRootA).position.x = 0
+
+
   }
 
   updateTitle(_title: string): void {
