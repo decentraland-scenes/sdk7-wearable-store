@@ -18,8 +18,8 @@ import {
   PointerEvents,
   PointerEventType,
   InputAction,
-  inputSystem
-} from '@dcl/sdk/ecs'
+  inputSystem,
+  MeshCollider} from '@dcl/sdk/ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { cleanString, ethClean, wordWrap } from './helperFunctions'
 
@@ -51,6 +51,7 @@ export class WearableMenuItem extends MenuItem {
   detailsRoot: Entity
   detailsCard: Entity
   buyButton: Entity
+  buyButtonCollider: Entity
   buyButtonText: PBTextShape
   buyButtonTextRoot: Entity
   availableCounter: Entity
@@ -313,12 +314,15 @@ export class WearableMenuItem extends MenuItem {
 
     // -- BUY BUTTON
     this.buyButton = engine.addEntity()
+
     Transform.create(this.buyButton, {
       position: Vector3.create(this.cardOffset.x, this.cardOffset.y - 0.2, this.cardOffset.z),
       scale: Vector3.create(0.1, 0.1, 0.1)
     })
     GltfContainer.create(this.buyButton, { src: resource.buyButtonShape })
-
+    this.buyButtonCollider = engine.addEntity()
+    Transform.create(this.buyButtonCollider, { scale: Vector3.create(0.5, 0.5, 0.5), parent: this.buyButton })
+    MeshCollider.setPlane(this.buyButtonCollider)
     Transform.getMutable(this.buyButton).parent = this.detailsCard
     AnimatedItem.create(this.buyButton, {
       defaultTransform_position: Vector3.create(0, 0, 0.1),
@@ -347,38 +351,35 @@ export class WearableMenuItem extends MenuItem {
     Transform.getMutable(this.buyButtonTextRoot).parent = this.buyButton
     this.buyButtonText.text = 'BUY'
     if (_item.available > 1) {
-      PointerEvents.createOrReplace(this.buyButton, {
+      PointerEvents.create(this.buyButtonCollider, {
         pointerEvents: [
           {
             eventType: PointerEventType.PET_DOWN,
             eventInfo: {
               button: InputAction.IA_POINTER,
-              hoverText: 'BUY'
+              hoverText: 'BUY',
+              showFeedback: true
             }
           }
         ]
       })
       engine.addSystem(() => {
-        if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN, this.buyButton)) {
+        if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN, this.buyButtonCollider)) {
           // buy(_collection.id, _item.blockchainId, _item.price, this)
         }
       })
     } else {
-      PointerEvents.createOrReplace(this.buyButton, {
+      PointerEvents.create(this.buyButtonCollider, {
         pointerEvents: [
           {
             eventType: PointerEventType.PET_DOWN,
             eventInfo: {
               button: InputAction.IA_POINTER,
-              hoverText: 'OUT OF STOCK'
+              hoverText: 'OUT OF STOCK',
+              showFeedback: true
             }
           }
         ]
-      })
-      engine.addSystem(() => {
-        if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN, this.buyButton)) {
-          /* empty */
-        }
       })
     }
 
@@ -411,7 +412,6 @@ export class WearableMenuItem extends MenuItem {
   }
 
   updateItemInfo(_collection: any, _item: any): void {
-
     // image
     if (_item.image === 'images/dummy_scene.png') {
       this.thumbNail.updateImage(_item.image)
