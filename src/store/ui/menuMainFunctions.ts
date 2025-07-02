@@ -99,7 +99,7 @@ export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: an
           },
           roundedSquareAlpha,
           _collection,
-          _collection.items[i] 
+          _collection.items[i]
         )
       )
     }
@@ -198,12 +198,40 @@ export async function updateCollectionsMenu(
   const collections: Collection[] = []
 
   if (collectionsList != null && collectionsList.length > 0) {
-    const collectionNames = await f.getCollectionNamesFromServer(collectionsList)
+    for (const contractAddress of collectionsList) {
+      const response = await fetch(
+        `https://marketplace-api.decentraland.org/v1/items?contractAddress=${contractAddress}`
+      )
+      const json = await response.json()
+      const itemsData = json.data
 
-    for (let i = 0; i < collectionsList.length; i++) {
-      const urn = collectionsList[i]
-      const name = collectionNames[i] ?? urn
-      const collection = await f.buildCollectionObject(urn, name)
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (!itemsData || itemsData.length === 0) continue
+
+      // Usamos el name del primer ítem como nombre de la colección
+      const firstItem = itemsData[0]
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      const collectionName = firstItem.name || contractAddress
+
+      // No tocamos buildCollectionObject — lo usamos igual que antes
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const collection = await f.buildCollectionObject(contractAddress, collectionName)
+
+      // Pero aseguramos que tenga los ítems (por si f.buildCollectionObject no los mete)
+      collection.items = itemsData.map((item: any) => ({
+        metadata: {
+          wearable: item.category === 'wearable' ? { name: item.name } : undefined,
+          emote: item.category === 'emote' ? { name: item.name } : undefined
+        },
+        image: item.thumbnail,
+        price: item.price,
+        rarity: item.rarity,
+        available: item.available,
+        maxSupply: '1', // asumido
+        blockchainId: item.itemId,
+        urn: item.urn
+      }))
+
       collections.push(collection)
     }
   }

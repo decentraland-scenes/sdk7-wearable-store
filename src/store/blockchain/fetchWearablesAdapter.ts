@@ -45,32 +45,44 @@ export async function getCollectionNamesFromServer(collectionIds: string[]): Pro
     return []
   }
 }
-export async function buildCollectionObject(urn: string, name: string): Promise<Collection> {
-  const wearables = await getListOfWearables({ collectionIds: [urn] })
-  console.log(wearables, ' aqui')
-  // createUI(wearables[0].image)
-  const items = wearables.map((wearable) => ({
-    metadata: {
-      wearable:
-        (wearable.category as string) === 'wearable' ? { name: wearable.i18n?.[0]?.text ?? wearable.id } : undefined,
-      emote: (wearable.category as string) === 'emote' ? { name: wearable.i18n?.[0]?.text ?? wearable.id } : undefined
-    },
-    image: wearable.thumbnail,
-    price: '',
-    rarity: wearable.rarity ?? '',
-    available: '1',
-    maxSupply: '1',
-    blockchainId: wearable.id.split(':').pop() ?? '',
-    urn: wearable.id
-  }))
-  // createUI(items[1].urn)
-  return {
-    id: urn,
-    name,
-    isApproved: true,
-    owner: '',
-    urn,
-    items
+export async function buildCollectionObject(urn: string, name?: string): Promise<Collection> {
+  try {
+    const contractAddress = urn.split(':').pop()
+    const response = await fetch(`https://marketplace-api.decentraland.org/v1/items?contractAddress=${contractAddress}`)
+    const json = await response.json()
+
+    const items = json.data.map((item: any) => ({
+      metadata: {
+        wearable: item.category === 'wearable' ? { name: item.name } : undefined,
+        emote: item.category === 'emote' ? { name: item.name } : undefined
+      },
+      image: item.thumbnail,
+      price: item.price,
+      rarity: item.rarity,
+      available: item.available,
+      maxSupply: '', // No lo devuelve directamente esta API, podés dejarlo vacío o estimarlo
+      blockchainId: item.itemId,
+      urn: item.urn
+    }))
+
+    return {
+      id: urn,
+      name: name ?? contractAddress ?? 'Unnamed Collection',
+      isApproved: true,
+      owner: '',
+      urn,
+      items
+    }
+  } catch (err) {
+    console.error('Error building collection from marketplace API:', err)
+    return {
+      id: urn,
+      name: name ?? 'Unknown',
+      isApproved: false,
+      owner: '',
+      urn,
+      items: []
+    }
   }
 }
 export function createUI(some: string | any): void {
