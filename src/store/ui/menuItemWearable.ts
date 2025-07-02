@@ -22,6 +22,7 @@ import {
   MeshCollider} from '@dcl/sdk/ecs'
 import { Color4, Quaternion, Vector3 } from '@dcl/sdk/math'
 import { cleanString, ethClean, wordWrap } from './helperFunctions'
+import { buyWearable } from '../blockchain/tranferWearable'
 
 // const clickableGroup = engine.getComponentGroup(ClickableItem, Transform)
 
@@ -365,7 +366,8 @@ export class WearableMenuItem extends MenuItem {
       })
       engine.addSystem(() => {
         if (inputSystem.isTriggered(InputAction.IA_POINTER, PointerEventType.PET_DOWN, this.buyButtonCollider)) {
-          // buy(_collection.id, _item.blockchainId, _item.price, this)
+          console.log('buy', _collection.id, _item.blockchainId, _item.price)
+            void buyWearable(_collection.id, _item.blockchainId, _item.price)
         }
       })
     } else {

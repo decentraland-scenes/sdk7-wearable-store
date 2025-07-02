@@ -4,7 +4,6 @@ export async function buyWearable(nftAddress: string, assetId: number, price: nu
   try {
     // Check if the user has authorized the marketplace contract and has sufficient balance
     const isAuthorized = await crypto.marketplace.isAuthorizedAndHasBalance(String(price))
-
     if (!isAuthorized) {
       console.log('Insufficient permissions or balance. Requesting approval...')
 
@@ -14,6 +13,7 @@ export async function buyWearable(nftAddress: string, assetId: number, price: nu
 
     // Execute the purchase order on the marketplace for the specified NFT
     await crypto.marketplace.executeOrder(nftAddress, assetId, price)
+    console.log('execute')
 
     console.log('Purchase successful!')
   } catch (error) {
