@@ -1,4 +1,5 @@
-import * as ui from 'dcl-ui-toolkit'
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+// import * as ui from 'dcl-ui-toolkit'
 
 export type Collection = {
   id: string
@@ -73,12 +74,12 @@ export async function buildCollectionObject(urn: string, name: string): Promise<
     items
   }
 }
-export function createUI(some: string | any): void {
-  console.log('CREATORRRR UI')
+// export function createUI(some: string | any): void {
+//   console.log('CREATORRRR UI')
 
-  const announcement = ui.createComponent(ui.Announcement, { value: 'HERE' + some, duration: 2500 })
-  announcement.show()
-}
+//   const announcement = ui.createComponent(ui.Announcement, { value: 'HERE' + some, duration: 2500 })
+//   announcement.show()
+// }
 
 export async function getListOfWearables(filters: Record<string, string[] | string>): Promise<any[]> {
   const queryParams = convertObjectToQueryParamString(filters)
@@ -123,4 +124,53 @@ function mapV2WearableIntoV1(catalystUrl: string, wearable: any): any {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     thumbnail: isFullUrl ? thumbnail : baseUrl + thumbnail
   }
+}
+
+export async function buildCollectionsFromMarketplaceAPI(contractAddresses: string[]): Promise<Collection[]> {
+  const collections: Collection[] = []
+
+  for (const address of contractAddresses) {
+    try {
+      const res = await fetch(`https://marketplace-api.decentraland.org/v1/items?contractAddress=${address}`)
+      if (!res.ok) {
+        console.log(`Failed to fetch items for contract: ${address}`)
+        continue
+      }
+
+      const json = await res.json()
+      const itemsRaw = json.data
+
+      if (!itemsRaw || itemsRaw.length === 0) {
+        console.log(`No items found for contract: ${address}`)
+        continue
+      }
+
+      const collection: Collection = {
+        id: address,
+        name: itemsRaw[0].data?.wearable?.description ?? address,
+        isApproved: true,
+        owner: itemsRaw[0].creator ?? '',
+        urn: address,
+        items: itemsRaw.map((item: any) => ({
+          metadata: {
+            wearable: item.category === 'wearable' ? { name: item.name } : undefined,
+            emote: item.category === 'emote' ? { name: item.name } : undefined
+          },
+          image: item.thumbnail,
+          price: item.price || '',
+          rarity: item.rarity || item.data?.wearable?.rarity || '',
+          available: item.available || '0',
+          maxSupply: '1',
+          blockchainId: item.itemId || '',
+          urn: item.urn
+        }))
+      }
+
+      collections.push(collection)
+    } catch (error) {
+      console.error(`Error fetching collection at ${address}:`, error)
+    }
+  }
+
+  return collections
 }

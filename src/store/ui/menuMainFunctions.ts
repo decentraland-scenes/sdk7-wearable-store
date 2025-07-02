@@ -105,7 +105,6 @@ export function updateWearablesMenu(_menu: HorizontalScrollMenu, _collection: an
   _menu.halveSizeAllExcept(0)
 }
 
-
 // COLLECTIONS MENU
 export function createCollectionsVerticalMenu(
   _transform: TransformType,
@@ -189,29 +188,9 @@ export async function updateCollectionsMenu(
   const collections: Collection[] = []
 
   if (collectionsList != null && collectionsList.length > 0) {
-    const collectionNames = await f.getCollectionNamesFromServer(collectionsList)
-
-    for (let i = 0; i < collectionsList.length; i++) {
-      const urn = collectionsList[i]
-      const name = collectionNames[i] ?? urn
-      const collection = await f.buildCollectionObject(urn, name)
-      collections.push(collection)
-    }
+    const fetchedCollections = await f.buildCollectionsFromMarketplaceAPI(collectionsList)
+    collections.push(...fetchedCollections)
   }
-  // const fromAddress = getPlayer()
-
-  // const allowance = await mana.allowance(fromAddress?.userId, STORE_CONTRACT_ADDRESS)
-  // const minimumRequired = 500n * 10n ** 18n
-  // // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  // if (BigInt(allowance) < minimumRequired) {
-  //   console.log('Approving MANA to CollectionStore...')
-  //   try {
-  //     await mana.approve(STORE_CONTRACT_ADDRESS, minimumRequired.toString())
-  //     console.log('MANA approved.')
-  //   } catch (e) {
-  //     console.log('MANA approval failed', e)
-  //   }
-  // }
   console.log(collections, 'Everything to display')
   let itemCount = 0
   console.log('number of Collections: ' + collections.length)
