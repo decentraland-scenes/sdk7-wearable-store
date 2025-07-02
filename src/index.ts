@@ -1,7 +1,4 @@
-import {
-  executeTask,
-  type TransformType
-} from '@dcl/sdk/ecs'
+import { executeTask, type TransformType } from '@dcl/sdk/ecs'
 import { Quaternion, Vector3 } from '@dcl/sdk/math'
 import {
   createWearablesHorizontalMenu,
@@ -9,7 +6,7 @@ import {
   updateCollectionsMenu
 } from './store/ui/menuMainFunctions'
 // import { getCollectionNamesFromServer } from './store/blockchain/fetchWearablesAdapter'
-import crypto from 'dcl-crypto-toolkit'
+import * as crypto from 'dcl-crypto-toolkit'
 
 import { ReactEcsRenderer } from '@dcl/sdk/react-ecs'
 import * as ui from 'dcl-ui-toolkit'
@@ -38,7 +35,8 @@ export function main(): void {
     const someWearables = await crypto.wearable.getListOfWearables({
       collectionIds: ['urn:decentraland:ethereum:collections-v1:mf_sammichgamer']
     })
-    console.log(someWearables, 'yeeeeeeeee')
+    console.log(someWearables, 'Reload')
+    //  void buyWearable('0x304a2d14b22801dafee057629627d5c51ddbaa8f', 0, 12)
   })
 }
 export function createWearableStore(transform: TransformType, collectionsList?: string[]): void {
@@ -57,23 +55,4 @@ export function createWearableStore(transform: TransformType, collectionsList?: 
     7
   )
   void updateCollectionsMenu(collectionsMenu, wearablesMenu, 10, true, collectionsList)
-}
-
-export async function buyWearable(nftAddress: string, assetId: number, price: number): Promise<void> {
-  try {
-    // 1. Verificar si el usuario tiene permisos y saldo suficiente
-    const isAuthorized = await crypto.marketplace.isAuthorizedAndHasBalance(String(price))
-    if (!isAuthorized) {
-      console.log('Permisos insuficientes o saldo insuficiente. Solicitando aprobación...')
-      // 2. Solicitar aprobación para que Marketplace pueda gastar MANA
-      await crypto.currency.setApproval(crypto.contract.mainnet.MANAToken, crypto.contract.mainnet.Marketplace, true)
-    }
-
-    // 3. Ejecutar la orden para comprar el wearable
-    await crypto.marketplace.executeOrder(nftAddress, assetId, price)
-
-    console.log('Compra realizada con éxito!')
-  } catch (error) {
-    console.error('Error comprando wearable:', error)
-  }
 }

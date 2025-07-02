@@ -1,4 +1,4 @@
-import crypto from 'dcl-crypto-toolkit'
+import * as crypto from 'dcl-crypto-toolkit'
 
 export async function buyWearable(nftAddress: string, assetId: number, price: number): Promise<void> {
   try {
